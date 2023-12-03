@@ -1,0 +1,121 @@
+{extend name="admin_base"}
+
+{block name="main"}
+
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+    <div class="content container-fluid">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3 class="page-title">业务员管理</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.html">主页</a></li>
+                        <li class="breadcrumb-item"><a href="customers.html">业务员管理</a></li>
+                        <li class="breadcrumb-item active">编辑信息</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- /Page Header -->
+        <form action="admin/api/doedit.php?id=<?php echo $_GET['id']; ?>" method="post">
+
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">基础信息</h4>
+                                <form action="admin/api/doedit.php?id=1" method="post">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>姓名</label>
+                                                <input type="text" name="username"
+                                                       value="username"
+                                                       class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>密码</label>
+                                                <input type="text" name="password"
+                                                       value="password"
+                                                       class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>电话号码</label>
+                                                <input type="text" name="tel" value="tel"
+                                                       class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>微信号</label>
+                                                <input type="text" name="email"
+                                                       value="email" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>身份证号码</label>
+                                                <input type="text" name="number"
+                                                       value="number" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6"></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>联系人</label>
+                                                <input type="text" name="oname"
+                                                       value="oname" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>联系人手机号</label>
+                                                <input type="text" name="otel" value="otel"
+                                                       class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>单位名称</label>
+                                                <input type="text" name="oname"
+                                                       value="oname" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+
+                                        </div>
+                                    </div>
+
+
+                                    <div class="text-right mt-4">
+                                        <button type="submit" class="btn btn-primary">保存</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    </div>
+</div>
+<!-- /Page Wrapper -->
+{/block}
+
+{block name="script"}
+
+{/block}

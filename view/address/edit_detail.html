@@ -1,0 +1,93 @@
+<div class="container" id="map_edit_9898">
+    <div class="container-fluid">
+        <form class="layui-form">
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">姓名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="name" v-model="address.name" required lay-verify="required"
+                           placeholder="请输入姓名"
+                           autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">电话</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" v-model="address.phone" required lay-verify="required"
+                           placeholder="请输入电话"
+                           autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">省</label>
+                <div class="row">
+                    <div data-toggle="distpicker">
+                        <select v-model="address.province" data-province="浙江省"></select>
+                        <select v-model="address.city" data-city="杭州市"></select>
+                        <select v-model="address.prefecture" data-district="西湖区"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">详细地址</label>
+                <div class="layui-input-block">
+                    <input type="text" v-model="address.address"
+                           required lay-verify="required" placeholder="请输入地址" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+            <button type="button" class="btn btn-white text-primary" @click="updateAddress">修改</button>
+            <button type="button" class="btn btn-white text-success">取消</button>
+        </form>
+    </div>
+</div>
+
+<script src="/distpicker/distpicker.js"></script>
+
+<script>
+    layui.use('form', function () {
+        let form = layui.form;
+
+        //监听提交
+        form.on('submit(formDemo)', function (data) {
+            layer.msg(JSON.stringify(data.field));
+            return false;
+        });
+
+        form.render();
+    });
+
+    new Vue({
+        el: "#map_edit_9898",
+        data: {
+            address: {
+                name: "张三",
+                phone: "手机号",
+                province: "",
+                city: "",
+                prefecture: "",
+                address: "详细地址"
+            }
+        },
+        created() {
+            // this.getAddress();
+        },
+        methods: {
+            updateAddress() {
+                console.log(this.address)
+                return;
+                ajax_post("/api/address/update", this.address, (msg) => {
+                    layer.msg(msg)
+                })
+            },
+            getAddress() {
+                let address_id = 1;
+                ajax_post("/api/address/info", {address_id}, (data) => {
+                    this.data = data
+                })
+            }
+        }
+    })
+</script>

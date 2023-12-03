@@ -1,0 +1,198 @@
+{extend name="base"}
+{block name="main"}
+<!-- Page Wrapper -->
+<div class="page-wrapper">
+    <div class="content container-fluid">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">顾客管理</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="customer_index.html">主页</a>
+                        </li>
+                        <li class="breadcrumb-item active">顾客管理</li>
+                    </ul>
+                </div>
+                <div class="col-auto">
+                    <a href="/index.php/customer/add" class="btn btn-primary mr-1">
+                        <i class="fas fa-plus"></i>
+                    </a>
+                    <a class="btn btn-primary filter-btn" onclick="orderListGet()" id="filter_search">
+                        <i class="fas fa-filter"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- /Page Header -->
+        <form action="order_index.html" method="post">
+            <!-- /Page Header -->
+            <div id="filter_inputs" class="card filter-card">
+                <div class="card-body pb-0">
+                    <div class="row">
+                        <div class="col-sm-6 col-md-3">
+                            <div class="form-group">
+                                <label for="wechat">客户微信</label>
+                                <input id="wechat" type="text" class="form-control" name="name">
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                            <div class="form-group">
+                                <label for="phone">客户手机</label>
+                                <input id="phone" type="text" class="form-control" name="tel">
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                            <div class="form-group">
+                                <label></label>
+                                <input id="search_orders" type="button" value="查找" class="form-control btn-primary"
+                                       style="color:#fff;"
+                                       onclick="searchOrders()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card card-table">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-center table-hover datatable">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th>客户类型</th>
+                                    <th>客户姓名</th>
+                                    <th>性别</th>
+                                    <th>客户来源</th>
+                                    <th>手机</th>
+                                    <th>微信号</th>
+                                    <th>锁定日期</th>
+                                    <th>省份</th>
+                                    <th>城市</th>
+                                    <th>搭配总额</th>
+                                    <th class="text-center">操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {foreach $records as $key=>$row}
+                                <tr class="customer-row" data-id="{$row.id}">
+                                    <td>{$row.ctype}</td>
+                                    <td>{$row.cname}</td>
+                                    <td>{$row.sex}</td>
+                                    <td>{$row.origin}</td>
+                                    <td>{$row.phone}</td>
+                                    <td>{$row.wechat}</td>
+                                    <td>{$row.ctype}</td>
+                                    <td>{$row.ctype}</td>
+                                    <td>{$row.ctype}</td>
+                                    <td>{$row.ctype}</td>
+                                    <td class="text-right">
+                                        <a href="customer_edit.html?id=<?php echo $row['id'] ?>"
+                                           class="btn btn-sm btn-white text-success mr-2"><i
+                                                class="far fa-edit mr-1"></i>编辑</a>
+                                        <a href="customer_edit.html?id=<?php echo $row['id'] ?>"
+                                           class="btn btn-sm btn-white text-info mr-2"><i
+                                                class="far fa-edit mr-1"></i>录订单</a>
+                                        <a href="customer_delete.html?id=<?php echo $row['id'] ?>"
+                                           class="btn btn-sm btn-white text-danger mr-2"><i
+                                                class="far fa-trash-alt mr-1"></i>删除</a>
+                                    </td>
+                                </tr>
+                                {/foreach}
+                                <tr>
+                                    <td colspan="12" align="right">
+                                        <div class="dataTables_paginate paging_simple_numbers"
+                                             id="DataTables_Table_0_paginate">
+                                            <!--分页-->
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div id="dingDataContainer">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Page Wrapper -->
+
+<script>
+    $(document).ready(function () {
+        $("#customer").addClass("active");
+    })
+</script>
+
+<script type="text/javascript">
+    function getQueryVariable(variable) {
+        let query = window.location.search.substring(1);
+        let vars = query.split("&");
+        for (let i = 0; i < vars.length; i++) {
+            let pair = vars[i].split("=");
+            if (pair[0] === variable) {
+                return pair[1];
+            }
+        }
+        return '';
+    }
+
+    $(document).ready(function () {
+        $(".customer-row").click(function () {
+            let customerName = $(this).find("td:eq(1)").text(); // Assuming the customer name is in the second column (index 1)
+            $.ajax({
+                type: "GET",
+                url: "customer_order_list.php",
+                data: {
+                    customerName: customerName
+                },
+                success: function (data) {
+                    $("#dingDataContainer").empty().append(data);
+                },
+                error: function () {
+                    alert("从服务器获取数据时出错。");
+                },
+            });
+            $(this).css({
+                backgroundColor: "#c7e8ef"
+            })
+            $(this).siblings().css({
+                backgroundColor: "#fff"
+            })
+        });
+
+        let phone = getQueryVariable("phone");
+        let wechat = getQueryVariable("wechat");
+        if (wechat !== '' || phone !== '') {
+            $("#filter_search").click();
+            $("#phone").val(phone);
+            $("#wechat").val(wechat);
+        }
+    });
+
+    function orderListGet() {
+        let status = document.getElementById('filter_inputs');
+        const element = document.getElementById('filter_inputs');
+        const computedStyle = getComputedStyle(element);
+        const display = computedStyle.display;
+        if (display === 'none') {
+            document.getElementById('filter_inputs').style.display = 'block';
+        } else {
+            document.getElementById('filter_inputs').style.display = 'none';
+        }
+    }
+
+    function searchOrders() {
+        let wechat = $("input[name='name']").val().toLowerCase();
+        let phone = $("input[name='tel']").val().toLowerCase();
+        window.location.href = 'db_customer.php?phone=' + phone + '&wechat=' + wechat;
+    }
+</script>
+{/block}
