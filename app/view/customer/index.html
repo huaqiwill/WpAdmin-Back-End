@@ -1,0 +1,258 @@
+{extend name="base"}
+{block name="main"}
+<style>
+    .id_23_90 {
+        cursor: pointer;
+    }
+
+    .id_23_90:hover {
+        color: deepskyblue;
+        text-decoration: underline;
+    }
+
+    .check_12 {
+        color: deepskyblue;
+    }
+</style>
+<!-- Page Wrapper -->
+<div class="page-wrapper" id="customer_index_1123">
+    <div class="content container-fluid">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">顾客管理</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/index.php">主页</a>
+                        </li>
+                        <li class="breadcrumb-item active">顾客管理</li>
+                    </ul>
+                </div>
+                <div class="col-auto">
+                    <a href="/index.php/customer/add" class="btn btn-primary mr-1">
+                        <i class="fas fa-plus"></i>
+                    </a>
+                    <a class="btn btn-primary filter-btn" id="filter_search">
+                        <i class="fas fa-filter"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- /Page Header -->
+        <form action="../order/index.html" method="post">
+            <!-- /Page Header -->
+            <div id="filter_inputs" class="card filter-card">
+                <div class="card-body pb-0">
+                    <div class="row">
+                        <div class="col-sm-6 col-md-3">
+                            <div class="form-group">
+                                <label>客户微信</label>
+                                <input v-model="query.wechat" type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                            <div class="form-group">
+                                <label>客户手机</label>
+                                <input v-model="query.phone" type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <input type="button" value="查找" class="form-control btn-primary" style="color:#fff;"
+                                    @click="customerList()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card card-table">
+                    <div class="card-body">
+                        <div class="table-responsive">
+
+                            <table class="table table-center table-hover datatable">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>客户类型</th>
+                                        <th>客户姓名</th>
+                                        <th>性别</th>
+                                        <th>客户来源</th>
+                                        <th>手机</th>
+                                        <th>微信号</th>
+                                        <th>锁定日期</th>
+                                        <th>省份</th>
+                                        <th>城市</th>
+                                        <th>搭配总额</th>
+                                        <th class="text-center">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <tr class="customer-row" v-for="customer in customers" :key="customer.cid">
+                                        <td>{{customer.ctype}}</td>
+                                        <td class="id_23_90" @click="orderList(customer.cid)">{{customer.cname}}</td>
+                                        <td>{{customer.sex}}</td>
+                                        <td>{{customer.origin}}</td>
+                                        <td>{{customer.phone}}</td>
+                                        <td>{{customer.wechat}}</td>
+                                        <td>{{customer.create_at}}</td>
+                                        <td>{{customer.province}}</td>
+                                        <td>{{customer.city}}</td>
+                                        <td class="id_23_90" @click="orderList(customer.cid)">{{customer.amount}}</td>
+                                        <td class="text-right">
+                                            <a @click="customerUpdatePage(customer.cid)"
+                                                class="btn btn-sm btn-white text-success mr-2">
+                                                <i class="far fa-edit mr-1"></i>编辑
+                                            </a>
+                                            <a @click="customerNewOrderPage(customer.cid)"
+                                                class="btn btn-sm btn-white text-info mr-2">
+                                                <i class="far fa-edit mr-1"></i>录订单
+                                            </a>
+                                            <a @click="customerDelete(customer.cid)"
+                                                class="btn btn-sm btn-white text-danger mr-2">
+                                                <i class="far fa-trash-alt mr-1"></i>删除
+                                            </a>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td colspan="12" align="right">
+                                            <div class="dataTables_paginate paging_simple_numbers">
+                                                <a v-for="i in pageCount" :href="generatePageLink(i)"
+                                                    style=" color:#333; text-decoration:none; padding:3px 10px; margin-right:5px; border:1px solid #333;">
+                                                    {{i}}
+                                                </a>
+                                                共{{count}}条记录
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div id="dingDataContainer">
+                                <table class="table table-center table-hover datatable">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>类型</th>
+                                            <th>订单号</th>
+                                            <th>总金额</th>
+                                            <th>收件人姓名</th>
+                                            <th>客户手机</th>
+                                            <th>快递公司</th>
+                                            <th>快递单号</th>
+                                            <th>录入日期</th>
+                                            <th>提交日期</th>
+                                            <th>客户姓名</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        <tr v-for="order in orders" :key="order.id">
+                                            <td>{{order.id}}</td>
+                                            <td>{{order.type}}</td>
+                                            <td>{{order.id}}</td>
+                                            <td>{{order.amount}}</td>
+                                            <td>{{order.consignee_name}}</td>
+                                            <td>{{order.consignee_phone}}</td>
+                                            <td>{{order.delivery_name}}</td>
+                                            <td>{{order.delivery_no}}</td>
+                                            <td>{{order.create_at}}</td>
+                                            <td>{{order.commit_at}}</td>
+                                            <td>{{order.customer_name}}</td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Page Wrapper -->
+{/block}
+
+{block name="script"}
+<script type="text/javascript">
+    $(document).ready(() => {
+        $("#filter_search").click(() => {
+            let status = document.getElementById('filter_inputs');
+            const element = document.getElementById('filter_inputs');
+            const computedStyle = getComputedStyle(element);
+            const display = computedStyle.display;
+            if (display === 'none') {
+                $("#filter_inputs").css("display", "block");
+            } else {
+                $("#filter_inputs").css("display", "none");
+            }
+        })
+    });
+
+    new Vue({
+        el: "#customer_index_1123",
+        data: {
+            count: 0,
+            query: {
+                page: 1,
+                page_size: 10,
+                wechat: "",
+                phone: ""
+            },
+            customers: [],
+            orders: []
+        },
+        created() {
+            this.customerList();
+        },
+        computed: {
+            pageCount() {
+                return Math.ceil(this.count / this.query.page_size);
+            }
+        },
+        methods: {
+            generatePageLink(page) {
+                return `/index.php/customer/index?page=${page}&page_size=${this.query.page_size}`;
+            },
+            customerUpdatePage(customer_id) {
+                location.href = "/index.php/customer/update?customer_id=" + customer_id
+            },
+            customerNewOrderPage(customer_id) {
+                location.href = "/index.php/order/add?customer_id=" + customer_id
+            },
+            customerList() {
+                this.query.page = getQueryVariable("page") || 1
+                this.query.page_size = getQueryVariable("page_size") || 10
+
+                ajax_post("/customer/list", this.query, (data, msg) => {
+                    this.customers = data.customers
+                    this.count = data.count
+                })
+            },
+            orderList(customer_id) {
+                ajax_post("/order/listGetByCustomerId", { customer_id }, (data, msg) => {
+                    this.orders = data
+                })
+            },
+            customerDelete(customer_id) {
+                layer.confirm('确认删除该顾客吗？', {
+                    btn: ['确定', '取消']
+                }, () => {
+                    ajax_post("/customer/delete", { customer_id }, (data, msg) => {
+                        layer.msg(msg);
+                        this.customerList();
+                    })
+                });
+            }
+        }
+    })
+
+
+</script>
+{/block}

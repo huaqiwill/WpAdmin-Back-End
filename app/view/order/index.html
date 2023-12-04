@@ -1,0 +1,274 @@
+{extend name="base"}
+
+{block name="main"}
+<style>
+    .id_vbd_12 {}
+
+    .id_vbd_12:hover {
+        color: deepskyblue;
+        text-decoration: underline;
+    }
+</style>
+
+<!-- Page Wrapper -->
+<div class="page-wrapper" id="order_index_1123">
+    <div class="content container-fluid">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">订单管理</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/index.php">主页</a>
+                        </li>
+                        <li class="breadcrumb-item active">订单管理</li>
+                    </ul>
+                </div>
+                <div class="col-auto">
+                    <a href="/index.php/order/add" class="btn btn-primary mr-1">
+                        <i class="fas fa-plus"></i>
+                    </a>
+                    <a class="btn btn-primary filter-btn" id="filter_search">
+                        <i class="fas fa-filter"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <form action="index.html" method="post">
+            <!-- /Page Header -->
+            <div id="filter_inputs" class="card filter-card">
+                <div class="card-body pb-0">
+                    <div class="row">
+                        <div class="col-sm-6 col-md-3">
+                            <div class="form-group">
+                                <label>客户姓名</label>
+                                <input v-model="query.name" type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                            <div class="form-group">
+                                <label>客户手机</label>
+                                <input v-model="query.phone" type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <input type="button" value="查找" class="form-control btn-primary text-white"
+                                    @click="orderList()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card card-table">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-center table-hover datatable">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>订单状态</th>
+                                        <th>订单类型</th>
+                                        <th>订单号</th>
+                                        <th>金额</th>
+                                        <th>客户姓名</th>
+                                        <th>客户手机</th>
+                                        <th>快递公司</th>
+                                        <th>快递单号</th>
+                                        <th>录入日期</th>
+                                        <th>提交日期</th>
+                                        <th class="text-center">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!--数据位置-->
+                                    <tr v-for="order in orders" :key="order.id">
+
+                                        <td v-if="order.status==0">录入</td>
+                                        <td v-else-if="order.status==1">已提交</td>
+                                        <td v-else>确认</td>
+
+                                        <td>{{order.type}}</td>
+                                        <td class="id_vbd_12" @click="orderDetail(order.id)">{{order.id}}</td>
+                                        <td>{{order.amount}}</td>
+                                        <td>{{order.customer_name}}</td>
+                                        <td>{{order.customer_phone}}</td>
+                                        <td>{{order.delivery_name}}</td>
+                                        <td>{{order.delivery_no}}</td>
+                                        <td>{{order.create_at}}</td>
+                                        <td>{{order.commit_at}}</td>
+                                        <td class="text-right">
+                                            {if $role_id == 1}
+                                            <div>
+                                                <a @click="orderUpdatePage(order.id,order.user_id)"
+                                                    class="btn btn-sm btn-white text-success mr-2">
+                                                    <i class="far fa-edit mr-1"></i>修改
+                                                </a>
+                                                <a @click="orderDelete(order.id)"
+                                                    class="btn btn-sm btn-white text-danger mr-2">
+                                                    <i class="far fa-trash-alt mr-1"></i>删除
+                                                </a>
+                                                <a @click="orderPrintPage(order.id,order.customer_id)"
+                                                    class="btn btn-sm btn-white text-primary mr-2">
+                                                    <i class="far fa-trash-alt mr-1"></i>打印
+                                                </a>
+                                            </div>
+                                            {else}
+                                            <div v-if="order.status==1">
+                                                <a @click="orderDetailPage(order.id,order.user_id)"
+                                                    class="btn btn-sm btn-white text-success  mr-2 ">
+                                                    <i class="far fa-edit mr-1"></i>查看
+                                                </a>
+                                                <a class="btn btn-sm btn-white  mr-2 disabled">
+                                                    <i class="far fa-trash-alt mr-1"></i>删除
+                                                </a>
+                                                <a class="btn btn-sm btn-white  mr-2 disabled">
+                                                    <i class="far fa-trash-alt mr-1"></i>提交
+                                                </a>
+                                            </div>
+                                            <div v-else>
+                                                <a @click="orderUpdatePage(order.id,order.user_id)"
+                                                    class="btn btn-sm btn-white text-success mr-2">
+                                                    <i class="far fa-edit mr-1"></i>修改
+                                                </a>
+                                                <a @click="orderDelete(order.id)"
+                                                    class="btn btn-sm btn-white text-danger mr-2">
+                                                    <i class="far fa-trash-alt mr-1"></i>删除
+                                                </a>
+                                                <a @click="orderSubmit(order.id)"
+                                                    class="btn btn-sm btn-white text-primary mr-2">
+                                                    <i class="far fa-trash-alt mr-1"></i>提交
+                                                </a>
+                                            </div>
+                                            {/if}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="12" align="right">
+                                            <div class="dataTables_paginate paging_simple_numbers">
+                                                <a v-for="i in pageCount" :href="generatePageLink(i)"
+                                                    style=" color:#333; text-decoration:none; padding:3px 10px; margin-right:5px; border:1px solid #333;">
+                                                    {{i}}
+                                                </a>
+                                                共{{count}}条记录
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 text-right">
+                            <h4 style="font-size: 18px;color: red;padding: 10px;">订单总额：{{total}}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Page Wrapper -->
+{/block}
+
+{block name="script"}
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#filter_search").click(function () {
+            const element = document.getElementById('filter_inputs');
+            const computedStyle = getComputedStyle(element);
+            const display = computedStyle.display;
+            if (display === 'none') {
+                $('#filter_inputs').css("display", "block");
+            } else {
+                $('#filter_inputs').css("display", "none");
+            }
+        })
+    })
+
+    new Vue({
+        el: "#order_index_1123",
+        data: {
+            query: {
+                page: 1,
+                page_size: 10,
+                phone: "",
+                name: ""
+            },
+            orders: [],
+            count: 0,
+            total: 1100,
+        },
+        created() {
+            this.orderList()
+        },
+        computed: {
+            pageCount() {
+                return Math.ceil(this.count / this.query.page_size);
+            }
+        },
+        methods: {
+
+            generatePageLink(page) {
+                return `/index.php/order/index?page=${page}&page_size=${this.query.page_size}`;
+            },
+            orderDelete(order_id) {
+                layer.confirm("是否删除订单？", {
+                    btn: ['确定', '取消']
+                }, () => {
+                    ajax_post("/order/delete", { order_id }, (data, msg) => {
+                        layer.msg(msg);
+                        this.orderList();
+                    })
+                })
+            },
+            orderConfirm(order_id) {
+                layer.confirm("是否确认订单？", {
+                    btn: ['确定', '取消']
+                }, () => {
+                    ajax_post("/order/confirm", { order_id }, (data, msg) => {
+                        layer.msg(msg);
+                        this.orderList();
+                    })
+                })
+            },
+            orderDetailPage(order_id, user_id) {
+                location.href = "/index.php/order/detail?order_id=" + order_id + "&user_id=" + user_id
+            },
+            orderList() {
+                this.query.page = getQueryVariable("page") || 1;
+                this.query.page_size = getQueryVariable("page_size") || 10;
+                ajax_post("/order/list", this.query, (data, msg) => {
+                    this.orders = data.orders;
+                    this.count = data.count;
+                    this.total = data.amount;
+                })
+            },
+            orderSubmit(order_id) {
+                layer.confirm("确认提交吗？", { btn: ["确定", "取消"] }, () => {
+                    ajax_post("/order/submit", { order_id }, (data, msg) => {
+                        layer.msg(msg);
+                        this.orderList();
+                    })
+                })
+            },
+            orderUpdatePage(order_id, user_id) {
+                location.href = "/index.php/order/update?order_id=" + order_id + "&user_id=" + user_id
+            },
+            orderPrintPage(order_id, customer_id) {
+                location.href = "/index.php/order/print?order_id=" + order_id + "&customer_id=" + customer_id
+            }
+        }
+    })
+
+</script>
+{/block}

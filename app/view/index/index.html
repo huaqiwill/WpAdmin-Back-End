@@ -1,0 +1,142 @@
+{extend name="base"}
+{block name="main"}
+<!-- Page Wrapper -->
+<div class="page-wrapper" id="index_1123">
+    <div class="content container-fluid">
+        <div class="row">
+            {if $role_id==1}
+            <div v-for="statistic in statistics" class="col-xl-3 col-sm-6 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="dash-widget-header">
+                            <span class="dash-widget-icon bg-1">
+                                <i class="fas fa-dollar-sign"></i>
+                            </span>
+                            <div class="dash-count">
+                                <div class="dash-title">{{statistic.name}}</div>
+                                <div class="dash-counts">
+                                    <p>{{statistic.count}}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="progress progress-sm mt-3">
+                            <div class="progress-bar bg-6" role="progressbar" :style="progress(statistic.percentage)"
+                                aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+                            </div>
+                        </div>
+                        <p class="text-muted mt-3 mb-0">
+                            <span class="text-danger mr-1">
+                                <i class="fas fa-arrow-down mr-1"></i>1.15%
+                            </span>
+                            比上周
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {else}
+            <div class="col-xl-3 col-sm-6 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="dash-widget-header">
+                            <span class="dash-widget-icon bg-1">
+                                <i class="fas fa-dollar-sign"></i>
+                            </span>
+                            <div class="dash-count">
+                                <div class="dash-title">订单总金额</div>
+                                <div class="dash-counts">
+                                    <p>1,642</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="progress progress-sm mt-3">
+                            <div class="progress-bar bg-5" role="progressbar" style="width: 75%" aria-valuenow="75"
+                                aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <p class="text-muted mt-3 mb-0"><span class="text-danger mr-1"><i
+                                    class="fas fa-arrow-down mr-1"></i>1.15%</span> 比上周</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="dash-widget-header">
+                            <span class="dash-widget-icon bg-2">
+                                <i class="fas fa-users"></i>
+                            </span>
+                            <div class="dash-count">
+                                <div class="dash-title">顾客数量</div>
+                                <div class="dash-counts">
+                                    <p>3,642</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="progress progress-sm mt-3">
+                            <div class="progress-bar bg-6" role="progressbar" style="width: 65%" aria-valuenow="75"
+                                aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <p class="text-muted mt-3 mb-0"><span class="text-success mr-1"><i
+                                    class="fas fa-arrow-up mr-1"></i>2.37%</span> 比上周</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 col-12">
+
+            </div>
+            <div class="col-xl-3 col-sm-6 col-12">
+
+            </div>
+            {/if}
+        </div>
+    </div>
+</div>
+<!-- /Page Wrapper -->
+{/block}
+
+{block name="script"}
+<script>
+
+    new Vue({
+        el: "#index_1123",
+        data: {
+            statistics: [
+                {
+                    name: "订单数量",
+                    count: "1,642",
+                    percentage: 75,
+                }, {
+                    name: "顾客数量",
+                    count: "3,642",
+                    percentage: 15,
+                }, {
+                    name: "商品数量",
+                    count: "100",
+                    percentage: 35,
+                }, {
+                    name: "人员数量",
+                    count: "3,642",
+                    percentage: 65,
+                }, {
+                    name: "订单总金额",
+                    count: "3,642",
+                    percentage: 15,
+                }
+            ]
+        },
+        created() {
+            this.statisticList();
+        },
+        computed: {},
+        methods: {
+            progress(percentage) {
+                return "width: " + percentage + "%"
+            },
+            statisticList() {
+                ajax_post("/index/statisticList", {}, (data, msg) => {
+                    this.statistics = data
+                });
+            }
+        }
+    })
+</script>
+{/block}

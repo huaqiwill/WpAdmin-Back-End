@@ -1,0 +1,170 @@
+{extend name="base"}
+
+{block name="main"}
+
+<!-- Page Wrapper -->
+<div class="page-wrapper" id="user_update_1123">
+    <div class="content container-fluid">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3 class="page-title">业务员管理</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.html">主页</a></li>
+                        <li class="breadcrumb-item"><a href="customers.html">业务员管理</a></li>
+                        <li class="breadcrumb-item active">编辑信息</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- /Page Header -->
+
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">基础信息</h4>
+                        <form>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>姓名</label>
+                                        <input v-model="user.username" type="text" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>密码</label>
+                                        <input v-model="user.password" type="text" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>电话号码</label>
+                                        <input v-model="user.phone" type="text" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>微信号</label>
+                                        <input v-model="user.wechat" type="text" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>身份证号码</label>
+                                        <input v-model="user.id_card" type="text" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="type">员工类型</label>
+                                        <select v-model="user.type" id="type" class="form-control">
+                                            <option value="业务员">业务员</option>
+                                            <option value="组长">组长</option>
+                                            <option value="主管">主管</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>紧急联系人姓名</label>
+                                        <input v-model="user.emergency_contact_name" type="text" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>紧急联系人手机号</label>
+                                        <input v-model="user.emergency_contact_phone" type="text" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>单位名称</label>
+                                        <input v-model="user.org_name" type="text" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>角色选择</label>
+                                        <select disabled v-model="user.role_id" class="form-control">
+                                            <option value="" hidden>请选择角色类型</option>
+                                            <option v-for="role in roles" :key="role.id" :value="role.id">
+                                                {{role.name}}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-right mt-4">
+                                <button @click="userUpdate()" type="button" class="btn btn-primary">
+                                    保存
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Page Wrapper -->
+{/block}
+
+{block name="script"}
+<script>
+    new Vue({
+        el: "#user_update_1123",
+        data: {
+            user: {
+                id: "",
+                username: "",
+                password: "",
+                phone: "",
+                wechat: "",
+                id_card: "",
+                type: "",
+                emergency_contact_name: "",
+                emergency_contact_phone: "",
+                org_name: ""
+            },
+            roles: []
+        },
+        created() {
+            let user_id = getQueryVariable("user_id");
+            this.userInfo(user_id)
+            this.roleList()
+        },
+        methods: {
+            userInfo(user_id) {
+                ajax_post("/user/info", { user_id }, (data, msg) => {
+                    this.user = data
+                })
+            },
+            userUpdate() {
+                ajax_post("/user/update", this.user, (data, msg) => {
+                    layer.msg(msg)
+                    location.href = "/index.php/user/index"
+                })
+            },
+            roleList() {
+                ajax_post("/role/list", {}, (data, msg) => {
+                    this.roles = data
+                })
+            }
+        }
+    })
+</script>
+{/block}

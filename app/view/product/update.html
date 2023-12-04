@@ -1,0 +1,114 @@
+{extend name="base"}
+{block name="main"}
+<!-- Page Wrapper -->
+<div class="page-wrapper" id="product_update_1123">
+    <div class="content container-fluid">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3 class="page-title">商品管理</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/index.php">主页</a></li>
+                        <li class="breadcrumb-item"><a href="/index.php/product/index">商品管理</a></li>
+                        <li class="breadcrumb-item active">编辑信息</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- /Page Header -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">基础信息</h4>
+                        <form>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>商品名称</label>
+                                        <input placeholder="请输入商品名称" type="text" class="form-control" v-model="product.name">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>价格</label>
+                                        <input placeholder="请输入商品价格" type="text" class="form-control" v-model="product.price">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>积分价格</label>
+                                        <input placeholder="请输入积分价格" type="text" class="form-control" v-model="product.point_price">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>数量</label>
+                                        <input placeholder="请输入商品数量" type="text" class="form-control" v-model="product.number">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>成本</label>
+                                        <input placeholder="请输入商品成本" type="text" class="form-control" v-model="product.cost">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+
+                                </div>
+                            </div>
+                            <div class="text-right mt-4">
+                                <button type="button" @click="productUpdate()" class="btn btn-primary">保存
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Page Wrapper -->
+{/block}
+
+{block name="script"}
+<script>
+    new Vue({
+        el: "#product_update_1123",
+        data: {
+            product: {
+                id: "",
+                name: "",
+                price: "",
+                point_price: "",
+                number: "",
+                cost: ""
+            }
+        },
+        created() {
+            let product_id = getQueryVariable("product_id")
+            this.productInfo(product_id)
+        },
+        methods: {
+            productInfo(product_id) {
+                ajax_post("/product/info", { product_id }, (data, msg) => {
+                    this.product = data
+                })
+            },
+            productUpdate() {
+                ajax_post("/product/update", this.product, (data, msg) => {
+                    layer.msg(msg);
+                    location.href = "/index.php/product/index"
+                })
+            }
+        }
+    })
+
+</script>
+{/block}

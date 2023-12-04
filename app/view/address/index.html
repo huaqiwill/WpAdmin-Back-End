@@ -1,0 +1,155 @@
+{extend name="base"}
+
+{block name="main"}
+<!-- Page Wrapper -->
+<div class="page-wrapper" id="address_index_1123">
+    <div class="content container-fluid">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">地址管理</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="/index.php">主页</a>
+                        </li>
+                        <li class="breadcrumb-item active">地址管理</li>
+                    </ul>
+                </div>
+                <div class="col-auto">
+                    <a @click="addressAddPage()" class="btn btn-primary mr-1">
+                        <i class="fas fa-plus"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- /Page Header -->
+
+
+        <div class="row">
+            <div class="col-sm-12">
+
+                <div class="card card-table">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-center table-hover datatable">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>收货人姓名</th>
+                                        <th>收货人手机号</th>
+                                        <th>省</th>
+                                        <th>市</th>
+                                        <th>区</th>
+                                        <th>详细地址</th>
+                                        <th>所属顾客</th>
+                                        <th class="text-center">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="address in address_list">
+                                        <td>{{address.name}}</td>
+                                        <td>{{address.phone}}</td>
+                                        <td>{{address.province}}</td>
+                                        <td>{{address.city}}</td>
+                                        <td>{{address.district}}</td>
+                                        <td>{{address.address}}</td>
+                                        <td>{{address.name}}</td>
+
+                                        <td class="text-right">
+                                            <a @click="addressUpdatePage(address.id)"
+                                                class="btn btn-sm btn-white text-success mr-2">
+                                                <i class="far fa-edit mr-1"></i>修改
+                                            </a>
+                                            <a @click="addressFreeze(address.id)"
+                                                class="btn btn-sm btn-white text-danger mr-2">
+                                                <i class="far fa-edit mr-1"></i>
+                                                删除
+                                            </a>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td colspan="11" align="right">
+                                            <div class="dataTables_paginate paging_simple_numbers">
+                                                <a v-for="i in pageCount" :href="generatePageLink(i)"
+                                                    style=" color:#333; text-decoration:none; padding:3px 10px; margin-right:5px; border:1px solid #333;">
+                                                    {{i}}
+                                                </a>
+                                                共{{count}}条记录
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name="script"}
+<script>
+    new Vue({
+        el: "#address_index_1123",
+        data: {
+            query: {
+                page: 1,
+                page_size: 10,
+            },
+            address_list: [],
+            count: 0
+        },
+        created() {
+            this.addressList()
+        },
+        computed: {
+            pageCount() {
+                return Math.ceil(this.count / this.query.page_size);
+            }
+        },
+        methods: {
+            generatePageLink(page) {
+                return `/index.php/address/index?page=${page}&page_size=${this.query.page_size}`;
+            },
+            addressList() {
+                this.query.page = getQueryVariable("page") || 1
+                this.query.page_size = getQueryVariable("page_size") || 10
+                ajax_post("/address/list", this.query, (data, msg) => {
+                    this.address_list = data.address_list;
+                    this.count = data.count;
+                })
+            },
+            addressAddPage() {
+                html_get("/address/add", (html) => {
+                    layer.open({
+                        label: "新增地址",
+                        btn: ['确认'],
+                        closeBtn: 2,
+                        area: ['600px', '500px'],
+                        content: html
+                    })
+                })
+            },
+            addressUpdatePage(address_id) {
+                html_get("/address/update", (html) => {
+                    layer.open({
+                        content: html
+                    })
+                })
+            },
+            addressDelete(address_id) {
+                layer.confirm("确定删除该地址吗？", { btn: ["确定", "取消"] }, () => {
+                    ajax_post("/address/delete", { address_id }, (data, msg) => {
+                        layer.msg(msg);
+                        this.addressList();
+                    })
+                })
+            }
+        }
+    })
+</script>
+{/block}

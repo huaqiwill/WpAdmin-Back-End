@@ -2,7 +2,10 @@
 
 namespace app\model;
 
-class AddressModel
+use think\Model;
+
+class AddressModel extends Model
 {
+    protected $table = "tb_address";
 
 }

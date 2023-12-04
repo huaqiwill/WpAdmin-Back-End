@@ -1,0 +1,161 @@
+{extend name="base"}
+
+{block name="main"}
+<style>
+    h4 {
+        font-size: 18px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    p {
+        margin: 10px;
+    }
+</style>
+
+<!-- Page Wrapper -->
+<div class="page-wrapper" id="order_print_1123">
+    <div class="content container-fluid">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3 class="page-title">订单打印</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/index.php">主页</a></li>
+                        <li class="breadcrumb-item"><a href="/index.php/order/index">订单管理</a></li>
+                        <li class="breadcrumb-item active">打印预览</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- /Page Header -->
+
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">订单打印</h4>
+                <!-- start -->
+                <div class="print_1123">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4>收货信息</h4>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><b>收货人：</b>{{receiptInfo.name}}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><b>联系方式：</b>{{receiptInfo.phone}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p><b>收货地址：</b>{{receiptInfo.address}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p><b>订单号：</b>{{receiptInfo.order_no}}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p><b>应付：</b>{{receiptInfo.pay}}元</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4>商品信息</h4>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table class="table">
+                                <tr>
+                                    <th>商品名称</th>
+                                    <th>价格</th>
+                                    <th>购买数量</th>
+                                    <th>小计</th>
+                                </tr>
+                                <tr v-for="order in orders">
+                                    <td>{{order.name}}</td>
+                                    <td>{{order.price}}</td>
+                                    <td>{{order.count}}</td>
+                                    <td>{{order.price * order.count}}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p class="text-right">总金额：{{amount}}元</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row " style="margin-top: 15px;">
+                    <div class="col-md-12 text-right">
+                        <button @click="print()" style="width: 100px;" class="btn btn-white text-success">打印</button>
+                    </div>
+                </div>
+                <!-- end -->
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Page Wrapper -->
+
+
+{/block}
+
+{block name="script"}
+<script>
+    new Vue({
+        el: "#order_print_1123",
+        data: {
+            receiptInfo: {
+                name: "",
+                phone: "",
+                address: "",
+                order_no: "",
+                pay: 0
+            },
+            orders: [
+
+            ],
+        },
+        computed: {
+            amount() {
+                let amount = 0;
+                for (let i = 0; i < this.orders.length; i++) {
+                    amount += this.orders[i].price * this.orders[i].count
+                }
+                return amount
+            }
+        },
+        created() {
+            this.printInfo()
+        },
+        methods: {
+            printInfo() {
+                let order_id = getQueryVariable("order_id")
+                let customer_id = getQueryVariable("customer_id")
+                ajax_post("/order/printInfo", { order_id, customer_id }, (data, msg) => {
+
+                    console.log(data.receiptInfo);
+                    this.receiptInfo = data.receiptInfo
+                    this.orders = data.orders
+                })
+            },
+            print() {
+                let html = $("body").html()
+                let print = $(".print_1123").html()
+                $("body").empty().append(print)
+                window.print();
+                $("body").empty().append(html)
+            }
+        }
+    })
+</script>
+{/block}

@@ -28,12 +28,5 @@ return [
     // 错误显示信息,非调试模式有效
     'error_message'    => '页面错误！请稍后再试～',
     // 显示错误信息
-    'show_error_msg'   => true,
-
-    //修改数据格式
-    // 默认输出类型
-    'default_return_type' => 'json',
-
-    // 是否返回json规范的格式
-    'api_return_standard' => true,
+    'show_error_msg'   => false,
 ];

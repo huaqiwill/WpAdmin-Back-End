@@ -2,7 +2,11 @@
 
 namespace app\model;
 
-class Delivery
+use think\Model;
+
+class DeliveryModel extends Model
 {
+    protected $table = "tb_delivery";
+
 
 }

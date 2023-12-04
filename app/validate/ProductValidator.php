@@ -7,7 +7,7 @@ use think\Validate;
 class ProductValidator extends Validate
 {
     protected $rule = [
-        'name' => 'require|unique:tb_item',
+        'name' => 'require|unique:tb_product',
         'price' => 'require',
         'number' => 'require',
     ];

@@ -45,10 +45,27 @@ class UserModel extends Model
     }
 
     // 验证授权码
-    public function validateToken($userId, $token)
+    public function validateToken($token)
     {
-        return $this->where('id', $userId)
-            ->where('token', $token)
-            ->find();
+        return $this->where('token', $token)->find();
+    }
+
+    //获取下一级的用户id列表
+    public function subordinateList($user_id)
+    {
+        return $this->where('owner_id', $user_id)->column("id");
+    }
+
+    //获取下级用户信息
+    public function subordinate($user_id)
+    {
+        return $this->where('owner_id', $user_id)->select();
+    }
+
+    public function adminList($page, $page_size)
+    {
+        $orders = $this->limit(($page - 1) * $page_size, $page_size)->select();
+        $count = $this->count();
+        return [$orders, $count];
     }
 }

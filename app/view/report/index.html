@@ -1,0 +1,117 @@
+{extend name="base"}
+
+{block name="main"}
+<!-- Page Wrapper -->
+<div class="page-wrapper" id="report_index_1123">
+    <div class="content container-fluid">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">员工业绩</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/index.php">主页</a>
+                        </li>
+                        <li class="breadcrumb-item active">员工业绩</li>
+                    </ul>
+                </div>
+                <div class="col-auto">
+                    <!-- <a href="/index.php/order/add" class="btn btn-primary mr-1">
+                        <i class="fas fa-plus"></i>
+                    </a>
+                    <a class="btn btn-primary filter-btn" id="filter_search">
+                        <i class="fas fa-filter"></i>
+                    </a> -->
+                </div>
+            </div>
+        </div>
+
+        <form action="index.html" method="post">
+            <!-- /Page Header -->
+            <div id="filter_inputs" class="card filter-card">
+                <div class="card-body pb-0">
+                    <div class="row">
+                        <div class="col-sm-6 col-md-3">
+                            <div class="form-group">
+                                <label for="name">客户姓名</label>
+                                <input id="name" type="text" class="form-control" name="name">
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                            <div class="form-group">
+                                <label for="tel">客户手机</label>
+                                <input id="tel" type="text" class="form-control" name="tel">
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <input type="button" value="查找" class="form-control btn-primary text-white"
+                                    onclick="order_query()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card card-table">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-center table-hover datatable">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>员工姓名</th>
+                                        <th>员工业绩</th>
+                                        <th>员工顾客数</th>
+                                        <th>员工订单数</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!--数据位置-->
+                                    <tr v-for="user_achievement in user_achievement_list">
+                                        <td>{{user_achievement.name}}</td>
+                                        <td>{{user_achievement.achievement}}</td>
+                                        <td>{{user_achievement.customer_count}}</td>
+                                        <td>{{user_achievement.order_count}}</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Page Wrapper -->
+{/block}
+
+{block name="script"}
+
+<script>
+    new Vue({
+        el: "#report_index_1123",
+        data: {
+            user_achievement_list: []
+        },
+        created() {
+            this.userAchievementList()
+        },
+        methods: {
+            userAchievementList() {
+                ajax_post("/report/userAchievement", {}, (data, msg) => {
+                    this.user_achievement_list = data
+                })
+            }
+        }
+    })
+</script>
+
+{/block}

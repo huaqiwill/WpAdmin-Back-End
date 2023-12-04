@@ -1,0 +1,9 @@
+<div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
+    {for start="1" end="$amount / $page_size + 1"}
+        <a href="[url]?page={$i}&page_size={$page_size}"
+           style=" color:#333; text-decoration:none; padding:3px 10px; margin-right:5px; border:1px solid #333;">
+            {$i}
+        </a>
+    {/for}
+    共{$amount}条记录
+</div>

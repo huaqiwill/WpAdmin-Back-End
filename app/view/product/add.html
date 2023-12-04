@@ -1,0 +1,117 @@
+{extend name="base"}
+
+{block name="main"}
+<!-- Page Wrapper -->
+<div class="page-wrapper" id="product_add_1123">
+    <div class="content container-fluid">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3 class="page-title">订单管理</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/index.php">主页</a></li>
+                        <li class="breadcrumb-item"><a href="/index.php/product/index">商品管理</a></li>
+                        <li class="breadcrumb-item active">添加商品</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- /Page Header -->
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">基础信息</h4>
+                        <form>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>商品名称</label>
+                                        <input placeholder="请输入商品名称" v-model="product.name" type="text"
+                                            class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>价格</label>
+                                        <input placeholder="请输入商品价格" v-model="product.price" type="text"
+                                            class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>积分价格</label>
+                                        <input placeholder="请输入积分价格" v-model="product.point_price" type="text"
+                                            class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>数量</label>
+                                        <input placeholder="请输入商品数量" v-model="product.number" type="text"
+                                            class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>成本</label>
+                                        <input placeholder="请输入商品成本" v-model="product.cost" type="text"
+                                            class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+
+                                </div>
+                            </div>
+                            <div class="text-right mt-4">
+                                <button type="button" @click="productAdd()" class="btn btn-primary">保存</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Page Wrapper -->
+{/block}
+
+{block name="script"}
+
+<script>
+    new Vue({
+        el: "#product_add_1123",
+        data: {
+            page: 1,
+            page_size: 10,
+            product: {
+                name: "",
+                price: "",
+                point_price: "",
+                number: "",
+                cost: ""
+            }
+        },
+        created() {
+            this.page = getQueryVariable("page") || 1
+            this.page_size = getQueryVariable("page_size") || 10
+        },
+        methods: {
+            productAdd() {
+                ajax_post("/product/add", this.product, (data, msg) => {
+                    layer.msg(msg);
+                    location.href = "/index.php/product/index?page=" + this.page + "&page_size=" + this.page_size
+                });
+            }
+        }
+    })
+</script>
+
+{/block}

@@ -3,30 +3,41 @@
 namespace app\middleware;
 
 use app\model\UserModel;
-use think\facade\Request;
+use app\Request;
+use Closure;
 use think\facade\Middleware;
-use think\Response;
 
 class TokenVerify extends Middleware
 {
-    public function handle($request, \Closure $next)
+    public function handle(Request $request, Closure $next)
     {
-        // 从请求头获取 Token
-        $token = Request::header('Authorization');
-
-        // 假设从请求中获取用户 ID
-        $userId = $request->param('user_id');
-
-        // 在数据库中验证 Token
-        $userModel = new UserModel();
-        $user = $userModel->validateToken($userId, $token);
-
-        if ($user) {
-            // Token 验证成功，允许进入控制器方法
+        $currentRoute = $request->pathinfo();
+        // 如果当前路由需要排除，可以在这里添加逻辑
+        if ($currentRoute == 'user/login') {
             return $next($request);
-        } else {
-            // Token 验证失败，返回未授权的响应
-            return Response::create(['message' => 'Unauthorized'], 'json', 401);
         }
+
+        $token = $request->cookie("token");
+        if (empty($token)) {
+            return redirect('/index.php/user/login');
+        }
+
+        $userModel = new UserModel();
+        $user = $userModel->validateToken($token);
+        if (!$user) {
+            //无效的token
+            return redirect('/index.php/user/login');
+        }
+
+        $userId = $user['id'];
+        $roleId = $user['role_id'];
+        $name = $user['username'];
+
+        $request->withMiddleware([
+            "role_id" => $roleId,
+            "name" => $name,
+            "user_id" => $userId
+        ]);
+        return $next($request);
     }
 }

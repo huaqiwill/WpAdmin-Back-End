@@ -1,0 +1,138 @@
+{extend name="base"}
+{block name="main"}
+<!-- Page Wrapper -->
+<div class="page-wrapper" id="delivery_index_1123">
+    <div class="content container-fluid">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="page-title">快递管理</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/index.php">主页</a>
+                        </li>
+                        <li class="breadcrumb-item active">快递管理</li>
+                    </ul>
+                </div>
+                <div class="col-auto">
+                    <a @click="deliveryAdd()" class="btn btn-primary mr-1">
+                        <i class="fas fa-plus"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- /Page Header -->
+
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card card-table">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-center table-hover datatable">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>快递编号</th>
+                                        <th>快递名称</th>
+                                        <th>快递状态</th>
+                                        <th class="text-center">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="delivery in delivery_list" :key="delivery.id" class="customer-row">
+                                        <td>{{delivery.id}}</td>
+                                        <td>{{delivery.name}}</td>
+                                        <td>{{delivery.status==1 ? '启用' : '禁用'}}</td>
+                                        <td class="text-center">
+                                            <button @click="deliveryUpdate(delivery.id)"
+                                                class="btn btn-sm btn-white text-success mr-2"><i
+                                                    class="far fa-edit mr-1"></i>修改
+                                            </button>
+                                            <button v-if="delivery.status==1" @click="deliveryDisable(delivery.id)"
+                                                class="btn btn-sm btn-white text-danger mr-2"><i
+                                                    class="far fa-trash-alt mr-1"></i>禁用
+                                            </button>
+                                            <button v-else @click="deliveryEnable(delivery.id)"
+                                                class="btn btn-sm btn-white text-primary mr-2"><i
+                                                    class="far fa-trash-alt mr-1"></i>启用
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Page Wrapper -->
+{/block}
+
+{block name="script"}
+<script>
+    new Vue({
+        el: "#delivery_index_1123",
+        data: {
+            delivery_list: []
+        },
+        created() {
+            this.deliveryList()
+        },
+        methods: {
+            deliveryList() {
+                ajax_post("/delivery/list", {}, (data, msg) => {
+                    this.delivery_list = data
+                })
+            },
+            deliveryAdd(delivery_id) {
+                layer.prompt({
+                    title: '请输入快递名称',
+                }, (name, index) => {
+                    ajax_post("/delivery/add", { name }, (data, msg) => {
+                        layer.msg(msg)
+                        this.deliveryList();
+                        layer.close(index);
+                    })
+                });
+            },
+            deliveryUpdate(delivery_id) {
+                ajax_post("/delivery/info", { delivery_id }, (data, msg) => {
+                    layer.prompt({
+                        title: '请输入快递名称',
+                        value: data.name
+                    }, (name, index) => {
+                        ajax_post("/delivery/update", { delivery_id, name }, (data, msg) => {
+                            layer.close(index);
+                            this.deliveryList();
+                            layer.msg(msg)
+                        })
+                    });
+                })
+            },
+            deliveryDisable(delivery_id) {
+                layer.confirm("确认禁用吗?", {
+                    btn: ["确认", "取消"]
+                }, () => {
+                    ajax_post("/delivery/disable", { delivery_id }, (data, msg) => {
+                        this.deliveryList();
+                        layer.msg(msg)
+                    })
+                })
+            },
+            deliveryEnable(delivery_id) {
+                layer.confirm("确认启用吗?", {
+                    btn: ["确认", "取消"]
+                }, () => {
+                    ajax_post("/delivery/enable", { delivery_id }, (data, msg) => {
+                        this.deliveryList();
+                        layer.msg(msg)
+                    })
+                })
+            }
+        }
+    })
+</script>
+{/block}

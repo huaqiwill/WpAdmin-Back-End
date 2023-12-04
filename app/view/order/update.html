@@ -1,0 +1,354 @@
+{extend name="base"}
+
+{block name="main"}
+<style>
+    .nest {
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .nest:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<!-- Page Wrapper -->
+<div class="page-wrapper" id="order_add_1123">
+    <div class="content container-fluid">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3 class="page-title">订单管理</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/index.php">主页</a></li>
+                        <li class="breadcrumb-item"><a href="/index.php/order/index">订单管理</a></li>
+                        <li class="breadcrumb-item active">修改订单</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- /Page Header -->
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">修改订单</h4>
+                        <form>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>下单日期</label>
+                                        <input v-model="order.create_at" type="date" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>订单类型</label>
+                                        <input placeholder="请输入订单类型" v-model="order.type" type="text"
+                                            class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>客户姓名</label>
+                                        <div class="form-control">
+                                            <input @input="phoneList()" placeholder="请输入顾客姓名"
+                                                v-model="order.customer_name" list="customer_name_list"
+                                                style="width: 100%;border: none" autocomplete>
+                                            <datalist id="customer_name_list">
+                                                <option v-for=" customer_name in customer_name_list"
+                                                    :value="customer_name">
+                                                </option>
+                                            </datalist>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="row">
+                                        <div class="col-md-9">
+                                            <div class="form-group">
+                                                <label>顾客手机号</label>
+                                                <input list="phone_list" v-model="order.customer_phone"
+                                                    placeholder="请输入顾客手机号" type="text" class="form-control">
+                                                <datalist id="phone_list">
+                                                    <option v-for=" phone in phone_list" :value="phone">
+                                                    </option>
+                                                </datalist>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>&nbsp;</label>
+                                                <button type="button" @click="customerGetByPhone()"
+                                                    class="btn btn-white text-success form-control">查询地址</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table class="table table-striped  text-center">
+                                        <thead>
+                                            <tr>
+                                                <th>姓名</th>
+                                                <th>性别</th>
+                                                <th>手机号</th>
+                                                <th>微信号</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>{{customer.cname}}</td>
+                                                <td>{{customer.sex}}</td>
+                                                <td>{{customer.phone}}</td>
+                                                <td>{{customer.wechat}}</td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="3">{{customer.address}}</td>
+                                                <td colspan="1" class="text-right">
+                                                    <button @click="addressListPage()"
+                                                        class="btn btn-white text-primary">
+                                                        编辑
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>快递公司</label>
+                                        <input placeholder="请输入快递公司" list="delivery_name_list"
+                                            v-model="order.delivery_name" type="text" class="form-control">
+                                        <datalist id="delivery_name_list">
+                                            <option v-for="delivery_name in delivery_name_list" :value="delivery_name">
+                                            </option>
+                                        </datalist>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>快递单号</label>
+                                        <input placeholder="请输入快递单号" v-model="order.delivery_no" type="text"
+                                            class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>发货时间</label>
+                                        <input v-model="order.delivery_time" type="date" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-1">商品<br />名称：</div>
+                                <div class="col-md-10">
+                                    <div class="form-control">
+                                        <input placeholder="请输入商品名称" v-model="product_name" list="product_name_list"
+                                            style="width: 100%;border: none" autocomplete>
+                                        <datalist id="product_name_list">
+                                            <option v-for="product_name in product_name_list" :value="product_name">
+                                            </option>
+                                        </datalist>
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <a class="btn btn-white text-success form-control" @click="cartAdd()">添加</a>
+                                </div>
+                            </div>
+
+                            <table class="table table-striped  text-center" style="margin-top: 20px;width: 100%;"
+                                cellpadding="5">
+                                <thead>
+                                    <tr height="30">
+                                        <th width="5%">商品ID</th>
+                                        <th width="55%">商品名称</th>
+                                        <th width="10%">价格</th>
+                                        <th width="10%">积分价格</th>
+                                        <th width="10%">数量</th>
+                                        <th width="10%">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cart_data">
+                                    <tr v-for="cart in carts" height="30" data-gid="">
+                                        <td>{{cart.cart_id}}</td>
+                                        <td>{{cart.name}}</td>
+                                        <td>{{cart.price}}</td>
+                                        <td>{{cart.point_price}}</td>
+                                        <td>
+                                            <input v-model="cart.product_num" type="text" class="form-control"
+                                                style="width:60px; margin:10px 35%; text-align:center;">
+                                        </td>
+                                        <td>
+                                            <a @click="cartUpdate(cart.cart_id,cart.product_num)" class="nest">修改</a>
+                                            |
+                                            <a @click="cartDelete(cart.cart_id)" class="nest">删除</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <input type="hidden" name="totals" value="">
+                            <div class="row" style="margin-top: 25px">
+                                <div class="col-md-6">
+                                    <span style="color: #f00">总金额</span>
+                                    <span>{{amount}}</span>
+                                </div>
+                                <div class="col-md-6 text-right">
+                                    <button type="button" @click="orderAdd()" class="btn btn-primary">保存</button>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /Page Wrapper -->
+{/block}
+
+{block name="script"}
+<script>
+    new Vue({
+        el: "#order_add_1123",
+        data: {
+            order: {
+                create_at: "",
+                type: "",
+                customer_name: "",
+                customer_phone: "",
+                delivery_name: "",
+                delivery_no: "",
+                delivery_time: "",
+                amount: ""
+            },
+            customer: {
+                cname: "",
+                phone: "",
+                sex: "",
+                wechat: "",
+            },
+            orders: [],
+            carts: [],
+            product_name: "",
+            delivery_name_list: [],
+            product_name_list: [],
+            customer_name_list: [],
+            phone_list: []
+        },
+        created() {
+            let order_id = getQueryVariable("order_id");
+            let user_id = getQueryVariable("user_id");
+            this.orderInfo(order_id, user_id)
+            this.productNameList()
+            this.customerNameList()
+            this.deliveryNameList()
+        },
+        computed: {
+            amount() {
+                let amount = 0;
+                for (let i = 0; i < this.carts.length; i++) {
+                    amount += this.carts[i].price * this.carts[i].product_num
+                }
+                return amount;
+            }
+        },
+        methods: {
+            orderInfo(order_id, user_id) {
+                ajax_post("/order/info", { order_id, user_id }, (data, msg) => {
+                    this.order = data
+                    this.customerGetByPhone()
+                    this.cartList(order_id, user_id)
+                })
+            },
+            phoneList() {
+                let name = this.order.customer_name;
+                if (name === "") {
+                    return
+                }
+                ajax_post("/customer/phoneList", { name }, (data, msg) => {
+                    this.phone_list = data
+                })
+            },
+            addressListPage() {
+
+            },
+            customerGetByPhone() {
+                let phone = this.order.customer_phone;
+                ajax_post("/customer/getByPhone", { phone }, (data, msg) => {
+                    this.customer = data
+                })
+            },
+            deliveryNameList() {
+                ajax_post("/delivery/nameList", {}, (data, msg) => {
+                    this.delivery_name_list = data
+                })
+            },
+            productNameList() {
+                ajax_post("/product/nameList", {}, (data, msg) => {
+                    this.product_name_list = data
+                })
+            },
+            customerNameList() {
+                ajax_post("/customer/nameList", {}, (data, msg) => {
+                    this.customer_name_list = data
+                })
+            },
+            orderList() {
+                ajax_post("/order/list", {}, (data, msg) => {
+                    this.orders = data
+                })
+            },
+            orderAdd() {
+                this.order.amount = this.amount;
+                ajax_post("/order/add", this.order, (data, msg) => {
+                    layer.msg(msg)
+                    location.href = "/index.php/order/index"
+                })
+            },
+            cartList(order_id, user_id) {
+                ajax_post('/cart/list', { order_id, user_id }, (data, msg) => {
+                    this.carts = data
+                })
+            },
+            cartAdd() {
+                let product_name = this.product_name;
+                ajax_post('/cart/add', { product_name }, (data, msg) => {
+                    layer.msg(msg)
+                    this.cartList()
+                })
+            },
+            cartUpdate(cart_id, product_num) {
+                ajax_post("/cart/update", { cart_id, product_num }, (data, msg) => {
+                    layer.msg(msg)
+                    this.cartList()
+                })
+            },
+            cartDelete(cart_id) {
+                ajax_post("/cart/delete", { cart_id }, (data, msg) => {
+                    layer.msg(msg)
+                    this.cartList()
+                })
+            }
+        }
+    })
+</script>
+{/block}
