@@ -4,6 +4,7 @@ namespace app\controller;
 
 use app\model\CustomerModel;
 use app\model\OrderModel;
+use app\model\PermissionModel;
 use app\model\RoleModel;
 use app\model\UserModel;
 use app\Request;
@@ -13,12 +14,15 @@ class Report
 {
     public function index(Request $request)
     {
+        $menus = $request->middleware("menus");
+        
         $role_id = $request->middleware("role_id");
         $name = $request->middleware("name");
         return view('index', [
             'name' => $name,
             'select' => 'report',
-            'role_id' => $role_id
+            'role_id' => $role_id,
+            'menus' => $menus
         ]);
     }
 

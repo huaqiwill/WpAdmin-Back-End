@@ -4,6 +4,7 @@ namespace app\controller;
 
 use app\BaseController;
 use app\middleware\TokenVerify;
+use app\model\PermissionModel;
 use app\model\RoleModel;
 use app\model\UserModel;
 use app\Response;
@@ -11,6 +12,7 @@ use app\utils\TokenCheck;
 use app\validate\LoginValidator;
 use app\Request;
 use app\validate\UserAddValidator;
+use app\validate\UserValidator;
 use think\response\View;
 
 
@@ -47,14 +49,10 @@ class User extends BaseController
 
     public function index(Request $request): View
     {
-        $page = input('get.page');
-        $page_size = input('get.page_size');
-        if (empty($page)) {
-            $page = 1;
-        }
-        if (empty($page_size)) {
-            $page_size = 10;
-        }
+        $page = input('get.page', 1);
+        $page_size = input('get.page_size', 10);
+
+        $menus = $request->middleware("menus");
 
         $userModel = new UserModel();
         $user_id = $request->middleware("user_id");
@@ -69,8 +67,8 @@ class User extends BaseController
             'users' => $users,
             'amount' => $amount,
             'page_size' => $page_size,
-            'role_id' => $role_id
-
+            'role_id' => $role_id,
+            'menus' => $menus
         ]);
     }
 
@@ -88,34 +86,28 @@ class User extends BaseController
             return view('login');
         }
 
-        $response = new Response();
-
-        $postData = $request->post();
-        $validator = new LoginValidator();
-        if (!$validator->check($postData)) {
-            return $response->err($validator->getError());
-        }
-
-        $userModel = new UserModel();
         $username = $request->post('username');
         $password = $request->post('password');
+
+        $userModel = new UserModel();
         if ($user = $userModel->login($username, $password)) {
             if ($user['status'] == 0) {
-                return $response->err('无法登录已冻结的账户,请联系管理员');
+                return err('您的账户已冻结,无法登录');
             }
             if ($user['role_id'] == "") {
-                return $response->err('无法登录无权限的账户,请联系管理员');
+                return err('您的账户无登录权限,请联系管理员');
             }
             $user['token'] = $userModel->generateToken($user['id']);
-            return $response->ok('登录成功', $user);
+            return ok('登录成功', $user);
         } else {
-            return $response->err('用户名或密码错误');
+            return err('用户名或密码错误');
         }
     }
 
     public function add(Request $request)
     {
         if ($request->isGet()) {
+            $menus = $request->middleware("menus");
             $role_id = $request->middleware("role_id");
 
             $roleModel = new RoleModel();
@@ -126,14 +118,15 @@ class User extends BaseController
                 'name' => $name,
                 'select' => 'user',
                 'role_id' => $role_id,
-                'roles' => $roles
+                'roles' => $roles,
+                'menus' => $menus
             ]);
         }
 
         $res = new Response();
 
         $postData = $request->post();
-        $validator = new UserAddValidator();
+        $validator = new UserValidator();
         if (!$validator->check($postData)) {
             return $res->err($validator->getError());
         }
@@ -168,10 +161,12 @@ class User extends BaseController
     public function update(Request $request)
     {
         if ($request->isGet()) {
+            $menus = $request->middleware("menus");
             return view('update', [
                 'name' => $request->middleware("name"),
                 'select' => 'user',
-                'role_id' => $request->middleware("role_id")
+                'role_id' => $request->middleware("role_id"),
+                'menus' => $menus
             ]);
         }
         $res = new Response();
@@ -181,7 +176,7 @@ class User extends BaseController
         }
 
         $postData = $request->post();
-        $validator = new UserAddValidator();
+        $validator = new UserValidator();
         $response = new Response();
         if (!$validator->check($postData)) {
             return $response->err($validator->getError());

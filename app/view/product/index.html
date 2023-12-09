@@ -109,19 +109,19 @@
                 return `/index.php/product/index?page=${page}&page_size=${this.query.page_size}`;
             },
             productList() {
-                this.query.page = getQueryVariable("page") || 1
-                this.query.page_size = getQueryVariable("page_size") || 10
-                ajax_post("/product/list", this.query, (data, msg) => {
+                this.query.page = getQuery("page") || 1
+                this.query.page_size = getQuery("page_size") || 10
+                 ajax.post("/product/list", this.query, (data, msg) => {
                     this.products = data.products;
                     this.count = data.count;
                 })
             },
             productUpdatePage(product_id) {
-                location.href = "/index.php/product/update?product_id=" + product_id
+                location.href = "/product/update?product_id=" + product_id
             },
             productDelete(product_id) {
                 layer.confirm("确认删除吗？", { btn: ["确认", "取消"] }, () => {
-                    ajax_post("/product/delete", { product_id }, (data, msg) => {
+                     ajax.post("/product/delete", { product_id }, (data, msg) => {
                         layer.msg(msg)
                         this.productList()
                     })

@@ -4,135 +4,101 @@ namespace app\controller;
 
 use app\BaseController;
 use app\model\DeliveryModel;
+use app\model\PermissionModel;
 use app\Request;
-use app\Response;
-use app\validate\DeliveryValidator;
 
 class Delivery extends BaseController
 {
     public function index(Request $request)
     {
-        $name = $request->middleware("name");
-        $role_id = $request->middleware("role_id");
-        $deliveryModel = new DeliveryModel();
-        $deliveryList = $deliveryModel->select();
+        $menus = $request->middleware("menus");
 
         return view('index', [
-            'name' => $name,
+            'name' => $request->middleware("name"),
             'select' => 'delivery',
-            'role_id' => $role_id,
-            'deliveryList' => $deliveryList,
+            'role_id' => $request->middleware("role_id"),
+            'menus' => $menus
         ]);
     }
 
-    public function list(Request $request)
+    public function list()
     {
-        $res = new Response();
         $deliveryModel = new DeliveryModel();
-        $delivery_list = $deliveryModel->select();
-        return $res->ok("获取成功", $delivery_list);
+        $delivery_list = $deliveryModel->where("status", 1)->select();
+        return ok("获取成功", $delivery_list);
     }
 
     public function add(Request $request)
     {
-        $res = new Response();
-        $postData = $request->post();
-        $validator = new DeliveryValidator();
-        if (!$validator->check($postData)) {
-            return $res->err($validator->getError());
-        }
-
+        $delivery = $request->post();
         $deliveryModel = new DeliveryModel();
-        $postData['status'] = 1;
-        $result = $deliveryModel->save($postData);
+        $delivery['status'] = 1;    //默认启用
+        $result = $deliveryModel->create($delivery);
         if ($result) {
-            return $res->ok("添加成功");
+            return ok("添加成功", $result);
         } else {
-            return $res->err("添加失败");
+            return err("添加失败");
         }
     }
 
-    public function nameList(Request $request)
+    public function nameList()
     {
-        $res = new Response();
         $model = new DeliveryModel();
         $names = $model->where('status', 1)->column("name");
-        return $res->ok("获取成功", $names);
+        return ok("获取成功", $names);
     }
 
     public function update(Request $request)
     {
-        $response = new Response();
+        //修改快递名称
         $name = $request->post("name");
-        if (empty($name)) {
-            return $response->err("快递名称不能为空");
-        }
         $delivery_id = $request->post("delivery_id");
+
         $deliveryModel = new DeliveryModel();
-
-        $delivery = $deliveryModel->where("id", $delivery_id)->find();
-        if (!$delivery) {
-            return $response->err("快递不存在");
-        }
-
-        $res = $delivery->save(['name' => $name]);
+        $res = $deliveryModel->where("id", $delivery_id)->update(['name' => $name]);
         if ($res) {
-            return $response->ok("修改成功");
+            return ok("修改成功");
         } else {
-            return $response->err("修改失败");
+            return err("修改失败");
         }
     }
 
     public function disable(Request $request)
     {
-        $response = new Response();
         $delivery_id = $request->post("delivery_id");
+
         $deliveryModel = new DeliveryModel();
-
-        $delivery = $deliveryModel->where("id", $delivery_id)->find();
-        if (!$delivery) {
-            return $response->err("快递不存在");
-        }
-
-        $res = $delivery->save(['status' => 0]);
+        $res = $deliveryModel->where("id", $delivery_id)->update(['status' => 0]);
         if ($res) {
-            return $response->ok("禁用成功");
+            return ok("禁用成功");
         } else {
-            return $response->err("禁用失败");
+            return err("禁用失败");
         }
     }
 
     public function info(Request $request)
     {
-        $res = new Response();
         $delivery_id = $request->post("delivery_id");
-        if (empty($delivery_id)) {
-            return $res->err("快递id为空");
-        }
+
         $deliveryModel = new DeliveryModel();
         $delivery = $deliveryModel->where("id", $delivery_id)->find();
-        if (!$delivery) {
-            return $res->err("获取失败");
+        if ($delivery) {
+            return ok("获取成功", $delivery);
+        } else {
+            return err("获取失败");
         }
-        return $res->ok("获取成功", $delivery);
     }
 
     public function enable(Request $request)
     {
-        $response = new Response();
         $delivery_id = $request->post("delivery_id");
+
         $deliveryModel = new DeliveryModel();
-
-        $delivery = $deliveryModel->where("id", $delivery_id)->find();
-        if (!$delivery) {
-            return $response->err("快递不存在");
-        }
-
-        $res = $delivery->save(['status' => 1]);
+        $res = $deliveryModel->where("id", $delivery_id)->update(['status' => 1]);
         if ($res) {
-            return $response->ok("禁用成功");
+            return ok("启用成功");
         } else {
-            return $response->err("禁用失败");
+            return err("启用失败");
         }
     }
 }

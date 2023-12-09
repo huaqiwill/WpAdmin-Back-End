@@ -31,7 +31,10 @@
                     </ul>
                 </div>
                 <div class="col-auto">
-
+                    <!-- 添加图标 -->
+                    <a @click="roleAdd()" class="btn btn-primary mr-1">
+                        <i class="fas fa-plus"></i>
+                    </a>
                 </div>
             </div>
         </div>
@@ -48,6 +51,7 @@
                                         <th>角色编号</th>
                                         <th>角色名称</th>
                                         <th>状态</th>
+                                        <th class="text-right">操作</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -55,6 +59,16 @@
                                         <td>{{role.id}}</td>
                                         <td>{{role.name}}</td>
                                         <td>{{role.status==1 ? '启用' : '禁用'}}</td>
+                                        <td class="text-right">
+                                            <button @click="roleUpdate(role.id)"
+                                                class="btn btn-white text-warning">修改</button>
+                                            <button @click="roleDisable(role.id)" v-if="role.status==1"
+                                                class="btn btn-white text-danger">禁用</button>
+                                            <button @click="roleEnable(role.id)" v-else
+                                                class="btn btn-white text-primary">启用</button>
+                                            <button @click="permissionPage(role.id)"
+                                                class="btn btn-white text-success">权限配置</button>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -79,9 +93,66 @@
             this.roleListGet()
         },
         methods: {
+            roleAdd() {
+                layer.prompt({
+                    formType: 3,
+                    title: '添加角色',
+                }, (name, index, elem) => {
+                    ajax.post("/role/add", { name }, (data, msg) => {
+                        layer.msg(msg, { icon: 1 });
+                        //关闭弹窗
+                        this.roleListGet();
+                        layer.close(index);
+                    })
+                })
+            },
+            roleUpdate(role_id) {
+                //获取角色信息
+                ajax.post("/role/info", { role_id }, (data, msg) => {
+                    //弹出提示框
+                    layer.prompt({
+                        formType: 3,
+                        value: data.name,
+                        title: '修改角色',
+                    }, (name, index, elem) => {
+                        //修改角色
+                        ajax.post("/role/update", { role_id, name }, (data, msg) => {
+                            layer.msg(msg, { icon: 1 });
+                            this.roleListGet();
+                            //关闭弹窗
+                            layer.close(index);
+                        });
+                    });
+                })
+            },
+            roleDisable(role_id) {
+                layer.confirm("确认禁止吗？", { btn: ["确认", "取消"] }, () => {
+                    ajax.post("/role/disable", { role_id }, (data, msg) => {
+                        layer.msg(msg, { icon: 1 });
+                        this.roleListGet();
+                    })
+                })
+            },
+            roleEnable(role_id) {
+                layer.confirm("确认启用吗？", { btn: ["确认", "取消"] }, () => {
+                    ajax.post("/role/enable", { role_id }, (data, msg) => {
+                        layer.msg(msg, { icon: 1 });
+                        this.roleListGet();
+                    })
+                })
+            },
             roleListGet() {
-                ajax_post("/role/list", {}, (data, msg) => {
+                ajax.post("/role/list", {}, (data, msg) => {
                     this.roles = data;
+                })
+            },
+            permissionPage(role_id) {
+                layer.open({
+                    type: 2,
+                    title: "权限管理",
+                    area: ["800px", "600px"],
+                    content: "/permission/index?role_id=" + role_id,
+                    scrollbar: false
                 })
             }
         }

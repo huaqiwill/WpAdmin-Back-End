@@ -1,0 +1,113 @@
+{extend name="subbase"}
+
+{block name="main"}
+<div class="container-fluid" id="permission_index_112">
+    <div class="row mt-1 mb-1">
+        <div class="col-2">
+            <button @click="permissionAdd()" class="btn btn-white text-success">添加权限</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <table class="table">
+                <tr>
+                    <th>权限ID</th>
+                    <th>权限名称</th>
+                    <th>权限路径</th>
+                    <th class="text-center">操作</th>
+                </tr>
+                <tr v-for="permission in permission_list">
+                    <td>{{permission.id}}</td>
+                    <td>{{permission.name}}</td>
+                    <td>{{permission.path}}</td>
+                    <td class="text-center">
+                        <button @click="permissionDelete(permission.id)" class="btn btn-white text-danger">删除</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name="script"}
+<script>
+    let add_data = null;
+    new Vue({
+        el: "#permission_index_112",
+        data: {
+            permission_list: []
+        },
+        created() {
+            this.permissionList();
+        },
+        methods: {
+            permissionList() {
+                let role_id = getQuery("role_id");
+                ajax.post("/permission/list", { role_id }, (data, msg) => {
+                    this.permission_list = data
+                })
+            },
+            permissionAdd() {
+                ajax.getHtml("/permission/add", (html) => {
+                    let index = layer.open({
+                        title: "添加权限",
+                        area: ["500px", "400px"],
+                        type: 1,
+                        content: html,
+                        btn: ["新增"],
+                        yes: (index, layero) => {
+                            //1秒后执行
+                            setTimeout(() => {
+                                this.permissionList();
+                            }, 1000)
+                        }
+                    })
+                    localStorage.index = index
+                })
+            },
+            permissionUpdate(permission_id) {
+                ajax.post("/permission/info", { permission_id }, (data, msg) => {
+                    layer.prompt({
+                        formType: 3,
+                        title: "修改权限",
+                        value: data.order,
+                    }, (order, index) => {
+                        ajax.post("/permission/update", { permission_id, order }, (data, msg) => {
+                            layer.msg(msg, { icon: 2 });
+                            layer.close(index);
+                        })
+                    })
+                })
+            },
+            permissionDelete(permission_id) {
+                let role_id = getQuery("role_id");
+                layer.confirm("确认删除吗？", { btn: ["确认", "取消"] }, () => {
+                    ajax.post("/permission/delete", { role_id, permission_id }, (data, msg) => {
+                        layer.msg(msg)
+                        this.permissionList();
+                    })
+                })
+            },
+            permissionDisable(permission_id) {
+                let role_id = getQuery("role_id");
+                layer.confirm("确认禁用吗？", { btn: ["确认", "取消"] }, () => {
+                    ajax.post("/permission/disable", { role_id, permission_id }, (data, msg) => {
+                        layer.msg(msg)
+                        this.permissionList();
+                    })
+                })
+            },
+            permissionEnable(permission_id) {
+                let role_id = getQuery("role_id");
+                layer.confirm("确认启用吗？", { btn: ["确认", "取消"] }, () => {
+                    ajax.post("/permission/enable", { role_id, permission_id }, (data, msg) => {
+                        layer.msg(msg)
+                        this.permissionList();
+                    })
+                })
+            }
+        }
+    })
+</script>
+{/block}

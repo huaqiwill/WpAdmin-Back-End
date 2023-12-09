@@ -95,7 +95,7 @@
 
                                     <tr class="customer-row" v-for="customer in customers" :key="customer.cid">
                                         <td>{{customer.ctype}}</td>
-                                        <td class="id_23_90" @click="orderList(customer.cid)">{{customer.cname}}</td>
+                                        <td class="a_btn" @click="orderList(customer.cid)">{{customer.cname}}</td>
                                         <td>{{customer.sex}}</td>
                                         <td>{{customer.origin}}</td>
                                         <td>{{customer.phone}}</td>
@@ -103,7 +103,7 @@
                                         <td>{{customer.create_at}}</td>
                                         <td>{{customer.province}}</td>
                                         <td>{{customer.city}}</td>
-                                        <td class="id_23_90" @click="orderList(customer.cid)">{{customer.amount}}</td>
+                                        <td class="a_btn" @click="orderList(customer.cid)">{{customer.amount}}</td>
                                         <td class="text-right">
                                             <a @click="customerUpdatePage(customer.cid)"
                                                 class="btn btn-sm btn-white text-success mr-2">
@@ -151,11 +151,11 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-
                                         <tr v-for="order in orders" :key="order.id">
                                             <td>{{order.id}}</td>
                                             <td>{{order.type}}</td>
-                                            <td>{{order.id}}</td>
+                                            <td class="a_btn" @click="orderDetailPage(order.id,order.user_id)">
+                                                {{order.id}}</td>
                                             <td>{{order.amount}}</td>
                                             <td>{{order.consignee_name}}</td>
                                             <td>{{order.consignee_phone}}</td>
@@ -165,7 +165,6 @@
                                             <td>{{order.commit_at}}</td>
                                             <td>{{order.customer_name}}</td>
                                         </tr>
-
                                     </tbody>
                                 </table>
                             </div>
@@ -218,25 +217,25 @@
         },
         methods: {
             generatePageLink(page) {
-                return `/index.php/customer/index?page=${page}&page_size=${this.query.page_size}`;
+                return `/customer/index?page=${page}&page_size=${this.query.page_size}`;
             },
             customerUpdatePage(customer_id) {
-                location.href = "/index.php/customer/update?customer_id=" + customer_id
+                location.href = "/customer/update?customer_id=" + customer_id
             },
             customerNewOrderPage(customer_id) {
-                location.href = "/index.php/order/add?customer_id=" + customer_id
+                location.href = "/order/add?customer_id=" + customer_id
             },
             customerList() {
-                this.query.page = getQueryVariable("page") || 1
-                this.query.page_size = getQueryVariable("page_size") || 10
+                this.query.page = getQuery("page") || 1
+                this.query.page_size = getQuery("page_size") || 10
 
-                ajax_post("/customer/list", this.query, (data, msg) => {
+                ajax.post("/customer/list", this.query, (data, msg) => {
                     this.customers = data.customers
                     this.count = data.count
                 })
             },
             orderList(customer_id) {
-                ajax_post("/order/listGetByCustomerId", { customer_id }, (data, msg) => {
+                ajax.post("/order/listGetByCustomerId", { customer_id }, (data, msg) => {
                     this.orders = data
                 })
             },
@@ -244,12 +243,15 @@
                 layer.confirm('确认删除该顾客吗？', {
                     btn: ['确定', '取消']
                 }, () => {
-                    ajax_post("/customer/delete", { customer_id }, (data, msg) => {
+                    ajax.post("/customer/delete", { customer_id }, (data, msg) => {
                         layer.msg(msg);
                         this.customerList();
                     })
                 });
-            }
+            },
+            orderDetailPage(order_id, user_id) {
+                location.href = "/order/detail?order_id=" + order_id + "&user_id=" + user_id
+            },
         }
     })
 

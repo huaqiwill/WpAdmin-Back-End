@@ -6,66 +6,104 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
     <title>管理系统</title>
     <!-- Favicon -->
-    <link rel="shortcut icon" href="/img/favicon.png">
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/font/bootstrap-icons.css"/>
-    <!-- Fontawesome CSS -->
-    <link rel="stylesheet" href="/plugins/fontawesome/css/fontawesome.min.css">
-    <link rel="stylesheet" href="/plugins/fontawesome/css/all.min.css">
+    <link rel="shortcut icon" href="/static/img/favicon.png">
+    <!-- Bootstrap4 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <!-- Fontawesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <!-- Layui -->
+    <link rel="stylesheet" href="/static/layui/css/layui.css">
     <!-- Main CSS -->
-    <link rel="stylesheet" href="/css/style.css">
-    <!--[if lt IE 9]>
-    <script src="/js/html5shiv.min.js"></script>
-    <script src="/js/respond.min.js"></script>
-    <![endif]-->
-    <!-- 引入 layui.css -->
-    <link rel="stylesheet" href="/layui/css/layui.css">
-    <!-- 引入 layui.js -->
-    <script src="/layui/layui.js"></script>
-    <script src="/layer/layer.js"></script>
-    <script src="/js/vue.js"></script>
-    <link rel="stylesheet" href="/css/my_style.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/style.extend.css">
 </head>
 
 <body>
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <!--header-->
+        <!-- Header -->
+        <div class="header">
+            <!-- Logo -->
+            <div class="header-left">
+                <a href="/index.html" class="logo">
+                    <img src="/static/img/logo.png" alt="Logo">
+                </a>
+                <a href="/index.html" class="logo logo-small">
+                    <img src="/static/img/logo-small.png" alt="Logo" width="30" height="30">
+                </a>
+            </div>
+            <!-- /Logo -->
+            <!-- Sidebar Toggle -->
+            <a href="javascript:void(0);" id="toggle_btn">
+                <i class="fas fa-bars"></i>
+            </a>
+            <!-- /Sidebar Toggle -->
+            <!-- Mobile Menu Toggle -->
+            <a class="mobile_btn" id="mobile_btn">
+                <i class="fas fa-bars"></i>
+            </a>
+            <!-- /Mobile Menu Toggle -->
+            <!-- Header Menu -->
+            <ul class="nav user-menu">
+                <!-- User Menu -->
+                <li class="nav-item dropdown has-arrow main-drop">
+                    <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
+                        <span class="user-img">
+                            <img src="/static/img/profiles/avatar-01.jpg" alt="">
+                            <span class="status online"></span>
+                        </span>
+                        <span>{$name}</span>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="/user/logout">
+                            <i data-feather="log-out" class="mr-1"></i>
+                            退出</a>
+                    </div>
+                </li>
+                <!-- /User Menu -->
+            </ul>
+            <!-- /Header Menu -->
+        </div>
+        <!-- /Header -->
 
-<!-- Main Wrapper -->
-<div class="main-wrapper">
-    <!--header-->
-{include file="header"}
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-inner slimscroll">
+                <div id="sidebar-menu" class="sidebar-menu">
+                    <ul>
+                        {foreach $menus as $menu}
+                        <li class="{$select == $menu.active_name ? 'active' : ''}">
+                            <a href="{$menu.path}">
+                                <i class="fas {$menu.icon}"></i> <span>{$menu.name}</span>
+                            </a>
+                        </li>
+                        {/foreach}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- /Sidebar -->
 
-{if $role_id==1}
-{include file="role/sidebar_1"}
-{elseif $role_id==2}
-{include file="role/sidebar_2"}
-{elseif $role_id==3}
-{include file="role/sidebar_3"}
-{elseif $role_id==4}
-{include file="role/sidebar_4"}
-{/if}
+        <!--main-->
+        {block name="main"}{/block}
+    </div>
+    <!-- /Main Wrapper -->
 
-    <!--main-->
-{block name="main"}{/block}
-</div>
-<!-- /Main Wrapper -->
-
-<!-- jQuery -->
-<script src="/js/jquery-3.5.1.min.js"></script>
-<!-- Bootstrap Core JS -->
-<script src="/js/popper.min.js"></script>
-<script src="/js/bootstrap.min.js"></script>
-<!-- Feather Icon JS -->
-<script src="/js/feather.min.js"></script>
-<!-- Slimscroll JS -->
-<script src="/plugins/slimscroll/jquery.slimscroll.min.js"></script>
-<!-- Custom JS -->
-<script src="/js/script.js"></script>
-<!--util-->
-<script src="/js/util.js"></script>
-
-{block name="script"}{/block}
-
+    <!-- jQuery -->
+    <script src="/static/jquery/jquery-3.7.1.js"></script>
+    <!-- Layui -->
+    <script src="/static/layui/layui.js"></script>
+    <!-- Popperjs Bootstrap4依赖 -->
+    <script src="/static/js/popper.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+    <!-- Vue -->
+    <script src="/static/vue/vue.js"></script>
+    <!-- Main JS -->
+    <script src="/static/js/script.js"></script>
+    <script src="/static/js/script.extend.js"></script>
+    {block name="script"}{/block}
 </body>
 
 </html>

@@ -1,15 +1,6 @@
 {extend name="base"}
 
 {block name="main"}
-<style>
-    .id_vbd_12 {}
-
-    .id_vbd_12:hover {
-        color: deepskyblue;
-        text-decoration: underline;
-    }
-</style>
-
 <!-- Page Wrapper -->
 <div class="page-wrapper" id="order_index_1123">
     <div class="content container-fluid">
@@ -26,7 +17,7 @@
                     </ul>
                 </div>
                 <div class="col-auto">
-                    <a href="/index.php/order/add" class="btn btn-primary mr-1">
+                    <a href="/order/add" class="btn btn-primary mr-1">
                         <i class="fas fa-plus"></i>
                     </a>
                     <a class="btn btn-primary filter-btn" id="filter_search">
@@ -44,16 +35,52 @@
                         <div class="col-sm-6 col-md-3">
                             <div class="form-group">
                                 <label>客户姓名</label>
-                                <input v-model="query.name" type="text" class="form-control">
+                                <input v-model="query.name" placeholder="请输入顾客的姓名" type="text" class="form-control">
                             </div>
                         </div>
                         <div class="col-sm-6 col-md-3">
                             <div class="form-group">
                                 <label>客户手机</label>
-                                <input v-model="query.phone" type="text" class="form-control">
+                                <input v-model="query.phone" placeholder="请输入顾客的手机号" type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-2">
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <input type="button" value="查找" class="form-control btn-primary text-white"
+                                    @click="orderList()">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6 col-md-6">
+                            <div class="form-group">
+                                <label>员工姓名</label>
+                                <input placeholder="请输入员工姓名进行筛选" type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-2">
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <input type="button" value="查找" class="form-control btn-primary text-white"
+                                    @click="orderList()">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6 col-md-3">
+                            <div class="form-group">
+                                <label>录入开始时间</label>
+                                <input v-model="query.name" type="date" class="form-control">
                             </div>
                         </div>
                         <div class="col-sm-6 col-md-3">
+                            <div class="form-group">
+                                <label>录入结束时间</label>
+                                <input v-model="query.phone" type="date" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-2">
                             <div class="form-group">
                                 <label>&nbsp;</label>
                                 <input type="button" value="查找" class="form-control btn-primary text-white"
@@ -83,19 +110,19 @@
                                         <th>快递单号</th>
                                         <th>录入日期</th>
                                         <th>提交日期</th>
+                                        <th>成交员工</th>
                                         <th class="text-center">操作</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <!--数据位置-->
                                     <tr v-for="order in orders" :key="order.id">
-
                                         <td v-if="order.status==0">录入</td>
                                         <td v-else-if="order.status==1">已提交</td>
                                         <td v-else>确认</td>
-
                                         <td>{{order.type}}</td>
-                                        <td class="id_vbd_12" @click="orderDetail(order.id)">{{order.id}}</td>
+                                        <td class="a_btn" @click="orderDetailPage(order.id,order.user_id)">
+                                            {{order.id}}</td>
                                         <td>{{order.amount}}</td>
                                         <td>{{order.customer_name}}</td>
                                         <td>{{order.customer_phone}}</td>
@@ -103,6 +130,7 @@
                                         <td>{{order.delivery_no}}</td>
                                         <td>{{order.create_at}}</td>
                                         <td>{{order.commit_at}}</td>
+                                        <td>{{order.user_id}}</td>
                                         <td class="text-right">
                                             {if $role_id == 1}
                                             <div>
@@ -114,7 +142,7 @@
                                                     class="btn btn-sm btn-white text-danger mr-2">
                                                     <i class="far fa-trash-alt mr-1"></i>删除
                                                 </a>
-                                                <a @click="orderPrintPage(order.id,order.customer_id)"
+                                                <a @click="orderPrintPage(order.id,order.customer_id,order.user_id)"
                                                     class="btn btn-sm btn-white text-primary mr-2">
                                                     <i class="far fa-trash-alt mr-1"></i>打印
                                                 </a>
@@ -181,20 +209,6 @@
 
 {block name="script"}
 <script type="text/javascript">
-
-    $(document).ready(function () {
-        $("#filter_search").click(function () {
-            const element = document.getElementById('filter_inputs');
-            const computedStyle = getComputedStyle(element);
-            const display = computedStyle.display;
-            if (display === 'none') {
-                $('#filter_inputs').css("display", "block");
-            } else {
-                $('#filter_inputs').css("display", "none");
-            }
-        })
-    })
-
     new Vue({
         el: "#order_index_1123",
         data: {
@@ -209,6 +223,18 @@
             total: 1100,
         },
         created() {
+            $(document).ready(function () {
+                $("#filter_search").click(function () {
+                    const element = document.getElementById('filter_inputs');
+                    const computedStyle = getComputedStyle(element);
+                    const display = computedStyle.display;
+                    if (display === 'none') {
+                        $('#filter_inputs').css("display", "block");
+                    } else {
+                        $('#filter_inputs').css("display", "none");
+                    }
+                })
+            })
             this.orderList()
         },
         computed: {
@@ -217,55 +243,51 @@
             }
         },
         methods: {
-
-            generatePageLink(page) {
-                return `/index.php/order/index?page=${page}&page_size=${this.query.page_size}`;
-            },
             orderDelete(order_id) {
-                layer.confirm("是否删除订单？", {
-                    btn: ['确定', '取消']
-                }, () => {
-                    ajax_post("/order/delete", { order_id }, (data, msg) => {
+                layer.confirm("是否删除订单？", { btn: ['确定', '取消'] }, () => {
+                    ajax.post("/order/delete", { order_id }, (data, msg) => {
                         layer.msg(msg);
                         this.orderList();
                     })
                 })
             },
             orderConfirm(order_id) {
-                layer.confirm("是否确认订单？", {
-                    btn: ['确定', '取消']
-                }, () => {
-                    ajax_post("/order/confirm", { order_id }, (data, msg) => {
+                layer.confirm("是否确认订单？", { btn: ['确定', '取消'] }, () => {
+                    ajax.post("/order/confirm", { order_id }, (data, msg) => {
                         layer.msg(msg);
                         this.orderList();
                     })
-                })
-            },
-            orderDetailPage(order_id, user_id) {
-                location.href = "/index.php/order/detail?order_id=" + order_id + "&user_id=" + user_id
-            },
-            orderList() {
-                this.query.page = getQueryVariable("page") || 1;
-                this.query.page_size = getQueryVariable("page_size") || 10;
-                ajax_post("/order/list", this.query, (data, msg) => {
-                    this.orders = data.orders;
-                    this.count = data.count;
-                    this.total = data.amount;
                 })
             },
             orderSubmit(order_id) {
                 layer.confirm("确认提交吗？", { btn: ["确定", "取消"] }, () => {
-                    ajax_post("/order/submit", { order_id }, (data, msg) => {
+                    ajax.post("/order/submit", { order_id }, (data, msg) => {
                         layer.msg(msg);
                         this.orderList();
                     })
                 })
             },
-            orderUpdatePage(order_id, user_id) {
-                location.href = "/index.php/order/update?order_id=" + order_id + "&user_id=" + user_id
+            orderList() {
+                this.query.page = getQuery("page") || 1;
+                this.query.page_size = getQuery("page_size") || 10;
+                console.log(ajax);
+                ajax.post("/order/list", this.query, (data, msg) => {
+                    this.orders = data.orders;
+                    this.count = data.count;
+                    this.total = data.amount;
+                });
             },
-            orderPrintPage(order_id, customer_id) {
-                location.href = "/index.php/order/print?order_id=" + order_id + "&customer_id=" + customer_id
+            generatePageLink(page) {
+                return "/order/index?page=" + page + "&page_size=" + this.query.page_size;
+            },
+            orderUpdatePage(order_id, user_id) {
+                location.href = "/order/update?order_id=" + order_id + "&user_id=" + user_id
+            },
+            orderPrintPage(order_id, customer_id, user_id) {
+                location.href = "/order/print?order_id=" + order_id + "&customer_id=" + customer_id + "&user_id=" + user_id
+            },
+            orderDetailPage(order_id, user_id) {
+                location.href = "/order/detail?order_id=" + order_id + "&user_id=" + user_id
             }
         }
     })

@@ -92,19 +92,19 @@
             }
         },
         created() {
-            let product_id = getQueryVariable("product_id")
+            let product_id = getQuery("product_id")
             this.productInfo(product_id)
         },
         methods: {
             productInfo(product_id) {
-                ajax_post("/product/info", { product_id }, (data, msg) => {
+                 ajax.post("/product/info", { product_id }, (data, msg) => {
                     this.product = data
                 })
             },
             productUpdate() {
-                ajax_post("/product/update", this.product, (data, msg) => {
+                 ajax.post("/product/update", this.product, (data, msg) => {
                     layer.msg(msg);
-                    location.href = "/index.php/product/index"
+                    location.href = "/product/index"
                 })
             }
         }

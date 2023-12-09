@@ -1,0 +1,21 @@
+/* 自定义样式 */
+
+.cursor_pointer {
+    cursor: pointer;
+}
+
+.a_btn {
+    text-decoration: none;
+}
+
+.a_btn:hover {
+    color: deepskyblue;
+    font-size: 1.1em;
+    text-decoration: underline;
+}
+
+.a_btn_active {
+    color: deepskyblue;
+    font-size: 1.1em;
+    text-decoration: underline;
+}

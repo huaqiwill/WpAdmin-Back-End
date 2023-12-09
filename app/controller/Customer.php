@@ -5,56 +5,34 @@ namespace app\controller;
 use app\BaseController;
 use app\model\CustomerModel;
 use app\model\OrderModel;
+use app\model\PermissionModel;
 use app\Request;
 use app\Response;
 use app\validate\CustomerValidator;
 
 class Customer extends BaseController
 {
-    public function index(Request $request): \think\response\View
+    public function index(Request $request)
     {
-        $page_size = $request->get("page_size");
-        $page = $request->get("page");
-        if (empty($page_size)) {
-            $page_size = 10;
-        }
-        if (empty($page)) {
-            $page = 1;
-        }
-
-        $role_id = $request->middleware("role_id");
-        $name = $request->middleware("name");
-        $user_id = $request->middleware("user_id");
-
-        $customerModel = new CustomerModel();
-        $customers = $customerModel->where("user_id", $user_id)->select();
-        $amount = $customerModel->where("user_id", $user_id)->count();
-
         return view('index', [
-            'name' => $name,
+            'name' => $request->middleware("name"),
             'select' => 'customer',
-            'customers' => $customers,
-            'role_id' => $role_id,
-            'amount' => $amount,
-            'page_size' => $page_size,
-            'page' => $page
+            'role_id' =>  $request->middleware("role_id"),
+            'menus' => $request->middleware("menus")
         ]);
     }
 
     public function phoneList(Request $request)
     {
-        $res = new Response();
         $name = $request->post("name");
-        if (empty($name)) {
-            return $res->err("请输入顾客姓名");
-        }
         $user_id = $request->middleware("user_id");
+
         $customerModel = new CustomerModel();
         $phoneList = $customerModel
             ->where("user_id", $user_id)
             ->where("cname", $name)
             ->column('phone');
-        return $res->ok("获取成功", $phoneList);
+        return ok("获取成功", $phoneList);
     }
 
     public function count(Request $request)
@@ -69,22 +47,16 @@ class Customer extends BaseController
     public function add(Request $request)
     {
         if ($request->isGet()) {
-            $name = $request->middleware("name");
-            $role_id = $request->middleware("role_id");
             return view('add', [
-                'name' => $name,
+                'name' => $request->middleware("name"),
                 'select' => 'customer',
-                'role_id' => $role_id
+                'role_id' => $request->middleware("role_id"),
+                'menus' => $request->middleware("menus")
             ]);
         }
 
         //新增
-        $response = new Response();
         $postData = $request->post();
-        $validator = new CustomerValidator();
-        if (!$validator->check($postData)) {
-            return $response->err($validator->getError());
-        }
 
         $user_id = $request->middleware("user_id");
         $postData['user_id'] = $user_id;
@@ -92,74 +64,37 @@ class Customer extends BaseController
         $itemModel = new CustomerModel();
         $item = $itemModel->create($postData);
         if ($item) {
-            return $response->ok("顾客新增成功", $item);
+            return ok("顾客新增成功", $item);
         } else {
-            return $response->err("顾客新增失败，请重试！");
+            return err("顾客新增失败，请重试！");
         }
     }
 
     public function update(Request $request)
     {
         if ($request->isGet()) {
-            $response = new Response();
-
-            $customer_id = $request->get("customer_id");
-            if (empty($customer_id)) {
-                return $response->errScript("无效的id");
-            }
-
-            $customerModel = new CustomerModel();
-            $customer = $customerModel->where('cid', $customer_id)->find();
-
-            if (!$customer) {
-                return $response->errScript("数据不存在");
-            }
-
             $name = $request->middleware("name");
             $role_id = $request->middleware("role_id");
             return view('update', [
                 'name' => $name,
                 'select' => 'customer',
                 'role_id' => $role_id,
-                'customer' => $customer
+                'menus' => $request->middleware("menus")
             ]);
         }
 
-        $response = new Response();
         $customer_id = $request->post('cid');
-        if (empty($customer_id)) {
-            return $response->err("请输入顾客id");
-        }
-        $postData = $request->post();
-        $validator = new CustomerValidator();
-        if (!$validator->check($postData)) {
-            return $response->err($validator->getError());
-        }
-
-        // 更新订单信息
         $itemModel = new CustomerModel();
-        // 查找订单
-        $item = $itemModel->where('cid', $customer_id)->find();
-
-        if (!$item) {
-            return $response->err('不存在的顾客');
-        }
-
-        $result = $item->save($postData);
+        $result = $itemModel->where('cid', $customer_id)->update($request->post());
         if ($result) {
-            return $response->ok("顾客信息修改成功");
+            return ok("顾客信息修改成功");
         } else {
-            return $response->err("顾客信息修改失败，请重试！");
+            return err("顾客信息修改失败，请重试！");
         }
-
     }
-
-
 
     public function list(Request $request)
     {
-        $res = new Response();
-
         $page = $request->post("page", 1);
         $page_size = $request->post("page_size", 10);
         $wechat = $request->post("wechat", "");
@@ -195,55 +130,48 @@ class Customer extends BaseController
             "customers" => $customers,
             "count" => $count
         ];
-        return $res->ok('获取成功', $data);
+        return ok('获取成功', $data);
     }
 
     public function getByPhone(Request $request)
     {
-        $res = new Response();
         $phone = $request->post("phone");
-        if (empty($phone)) {
-            return $res->err("请输入顾客手机号");
-        }
 
         $customerModel = new CustomerModel();
         $customer = $customerModel
             ->where("phone", $phone)
             ->find();
+
         if (!$customer) {
-            return $res->err("获取顾客信息失败");
+            return err("获取顾客信息失败");
         }
-        return $res->ok("获取成功", $customer);
+        return ok("获取成功", $customer);
     }
 
     public function nameList(Request $request)
     {
-        $res = new Response();
         $user_id = $request->middleware("user_id");
+
         $customerModel = new CustomerModel();
         $nameList = $customerModel
             ->where("user_id", $user_id)
             ->column("cname");
 
-        return $res->ok("获取成功", $nameList);
+        return ok("获取成功", $nameList);
     }
 
     public function info(Request $request)
     {
-        $response = new Response();
         $customer_id = $request->post('customer_id');
-        if (empty($customer_id)) {
-            return $response->err("缺少顾客id");
-        }
 
         // 查找订单
         $itemModel = new CustomerModel();
         $item = $itemModel->where('cid', $customer_id)->find();
         if (!$item) {
-            return $response->err('不存在的订单');
+            return err('不存在的订单');
         }
 
-        return $response->ok('查询成功', $item);
+        return ok('查询成功', $item);
     }
 
     public function find(Request $request)
@@ -267,30 +195,16 @@ class Customer extends BaseController
         }
     }
 
-
-
     public function delete(Request $request)
     {
-        $response = new Response();
         $customer_id = $request->post('customer_id');
-        if (empty($customer_id)) {
-            return $response->err("缺少顾客id");
-        }
 
         $customerModel = new CustomerModel();
-        // 查找顾客
-        $item = $customerModel->where('cid', $customer_id)->find();
-
-        if (!$item) {
-            return $response->err('不存在的顾客');
-        }
-
-        // 删除顾客
-        $result = $item->delete();
+        $result = $customerModel->where('cid', $customer_id)->delete();
         if ($result) {
-            return $response->ok('删除成功');
+            return ok('删除成功');
         } else {
-            return $response->err('删除失败,请重试!');
+            return err('删除失败,请重试!');
         }
     }
 

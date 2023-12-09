@@ -154,13 +154,13 @@
         },
         methods: {
             userAdd() {
-                ajax_post("/user/add", this.user, (data, msg) => {
+                 ajax.post("/user/add", this.user, (data, msg) => {
                     layer.msg(msg)
-                    location.href = "/index.php/user/index"
+                    location.href = "/user/index"
                 })
             },
             roleList() {
-                ajax_post("/role/list", {}, (data, msg) => {
+                 ajax.post("/role/list", {}, (data, msg) => {
                     this.roles = data
                 })
             }

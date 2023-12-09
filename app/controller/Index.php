@@ -2,45 +2,43 @@
 
 namespace app\controller;
 
-
 use app\BaseController;
 use app\model\CustomerModel;
 use app\model\OrderModel;
+use app\model\PermissionModel;
 use app\model\ProductModel;
 use app\model\UserModel;
 use app\Request;
-use app\Response;
 
 class Index extends BaseController
 {
-    public function test(Request $request)
+    public function index(Request $request)
     {
-        $role_id = $request->middleware("role_id");
-        $name = $request->middleware("name");
-
+        $menus = $request->middleware("menus");
         return view('index', [
-            'name' => $name,
+            'name' => $request->middleware("name"),
             'select' => 'home',
-            'role_id' => $role_id
+            'role_id' => $request->middleware("role_id"),
+            'menus' => $menus
         ]);
     }
 
-    public function index(Request $request)
+    public function static(Request $request)
     {
-        $role_id = $request->middleware("role_id");
-        $name = $request->middleware("name");
-
-        return view('index', [
-            'name' => $name,
-            'select' => 'home',
-            'role_id' => $role_id
-        ]);
+        $path = $request->param("path");
+        $path =  app()->getRootPath() . "static\\" . str_replace("/", "\\", $path);
+        if (is_file($path) && file_exists($path)) {
+            //读文件
+            $fileContent = file_get_contents($path);
+        } else {
+            //404
+            $fileContent = file_get_contents(app()->getRootPath() . "static\\error\\404.html");
+        }
+        return $fileContent;
     }
 
     public function statisticList(Request $request)
     {
-        $res = new Response();
-
         $orderModel = new OrderModel();
         $statistic_order_count = [
             "name" => "订单数量",
@@ -82,6 +80,6 @@ class Index extends BaseController
             $statistic_order_amount,
             $statistic_user_count,
         ];
-        return $res->ok("获取成功", $data);
+        return ok("获取成功", $data);
     }
 }

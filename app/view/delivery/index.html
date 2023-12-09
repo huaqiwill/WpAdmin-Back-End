@@ -83,7 +83,7 @@
         },
         methods: {
             deliveryList() {
-                ajax_post("/delivery/list", {}, (data, msg) => {
+                 ajax.post("/delivery/list", {}, (data, msg) => {
                     this.delivery_list = data
                 })
             },
@@ -91,7 +91,7 @@
                 layer.prompt({
                     title: '请输入快递名称',
                 }, (name, index) => {
-                    ajax_post("/delivery/add", { name }, (data, msg) => {
+                     ajax.post("/delivery/add", { name }, (data, msg) => {
                         layer.msg(msg)
                         this.deliveryList();
                         layer.close(index);
@@ -99,12 +99,12 @@
                 });
             },
             deliveryUpdate(delivery_id) {
-                ajax_post("/delivery/info", { delivery_id }, (data, msg) => {
+                 ajax.post("/delivery/info", { delivery_id }, (data, msg) => {
                     layer.prompt({
                         title: '请输入快递名称',
                         value: data.name
                     }, (name, index) => {
-                        ajax_post("/delivery/update", { delivery_id, name }, (data, msg) => {
+                         ajax.post("/delivery/update", { delivery_id, name }, (data, msg) => {
                             layer.close(index);
                             this.deliveryList();
                             layer.msg(msg)
@@ -116,7 +116,7 @@
                 layer.confirm("确认禁用吗?", {
                     btn: ["确认", "取消"]
                 }, () => {
-                    ajax_post("/delivery/disable", { delivery_id }, (data, msg) => {
+                     ajax.post("/delivery/disable", { delivery_id }, (data, msg) => {
                         this.deliveryList();
                         layer.msg(msg)
                     })
@@ -126,7 +126,7 @@
                 layer.confirm("确认启用吗?", {
                     btn: ["确认", "取消"]
                 }, () => {
-                    ajax_post("/delivery/enable", { delivery_id }, (data, msg) => {
+                     ajax.post("/delivery/enable", { delivery_id }, (data, msg) => {
                         this.deliveryList();
                         layer.msg(msg)
                     })

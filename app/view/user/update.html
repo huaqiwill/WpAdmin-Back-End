@@ -143,24 +143,24 @@
             roles: []
         },
         created() {
-            let user_id = getQueryVariable("user_id");
+            let user_id = getQuery("user_id");
             this.userInfo(user_id)
             this.roleList()
         },
         methods: {
             userInfo(user_id) {
-                ajax_post("/user/info", { user_id }, (data, msg) => {
+                 ajax.post("/user/info", { user_id }, (data, msg) => {
                     this.user = data
                 })
             },
             userUpdate() {
-                ajax_post("/user/update", this.user, (data, msg) => {
+                 ajax.post("/user/update", this.user, (data, msg) => {
                     layer.msg(msg)
-                    location.href = "/index.php/user/index"
+                    location.href = "/user/index"
                 })
             },
             roleList() {
-                ajax_post("/role/list", {}, (data, msg) => {
+                 ajax.post("/role/list", {}, (data, msg) => {
                     this.roles = data
                 })
             }

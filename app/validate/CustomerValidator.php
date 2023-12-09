@@ -18,6 +18,7 @@ class CustomerValidator extends Validate
     ];
 
     protected $message = [
+        'cid.require' => '请输入顾客ID',
         'cname.require' => '请输入顾客姓名',
         'sex.require' => '请选择顾客性别',
         'ctype.require' => '请输入顾客类型',
@@ -30,4 +31,63 @@ class CustomerValidator extends Validate
         'email.unique' => '邮箱已经存在',
         'create_at.require' => '请输入创建时间'
     ];
+
+    protected function sceneList()
+    {
+        $this->rule = [];
+    }
+
+    protected function sceneAdd()
+    {
+        $this->rule = [
+            'cname' => 'require',
+            'sex' => 'require',
+            'ctype' => 'require',
+            'origin' => 'require',
+            'phone' => 'require|unique:tb_customer',
+            'wechat' => 'require|unique:tb_customer',
+            'email' => 'require|unique:tb_customer',
+        ];
+    }
+
+    protected function sceneUpdate()
+    {
+        $this->rule = [
+            'cid' => 'require',
+            'cname' => 'require',
+            'sex' => 'require',
+            'ctype' => 'require',
+            'origin' => 'require',
+            'phone' => 'require|unique:tb_customer',
+            'wechat' => 'require|unique:tb_customer',
+            'email' => 'require|unique:tb_customer',
+        ];
+    }
+
+    protected function scenePhoneList()
+    {
+        $this->rule = [
+            'name' => 'require'
+        ];
+    }
+
+    protected function sceneNamelist()
+    {
+        $this->rule = [];
+    }
+
+    protected function sceneGetByPhone()
+    {
+        $this->rule = ['phone' => 'require'];
+    }
+
+    protected function sceneInfo()
+    {
+        $this->rule = ['customer_id' => 'require'];
+    }
+
+    protected function sceneDelete()
+    {
+        $this->rule = ['customer_id' => 'require'];
+    }
 }

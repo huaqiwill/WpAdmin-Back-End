@@ -76,7 +76,7 @@
         methods: {
             addressList() {
                 let customer_id = 1;
-                ajax_post("/address/list", { customer_id }, (data) => {
+                ajax.post("/address/list", { customer_id }, (data, msg) => {
                     this.address = data
                 })
             },
@@ -84,7 +84,7 @@
 
             },
             addressEditDetail(address_id) {
-                html_get("/address/editDetail?address_id=" + address_id, function (data) {
+                ajax.getHtml("/address/editDetail?address_id=" + address_id, function (data, msg) {
                     layer.open({
                         type: 1,
                         closeBtn: 2,
@@ -96,7 +96,7 @@
             },
             addressDelete(address_id) {
                 layer.confirm("确认删除吗？", { btn: ['确认', '取消'] }, () => {
-                    ajax_post("/address/delete", { address_id }, (msg) => {
+                    ajax.post("/address/delete", { address_id }, (data, msg) => {
                         layer.msg(msg)
                         this.addressList();
                     })

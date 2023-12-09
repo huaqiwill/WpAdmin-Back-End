@@ -14,4 +14,25 @@ class DeliveryValidator extends Validate
         'name.require' => '请输入快递名称',
         'name.unique' => '快递名称重复',
     ];
+
+    protected $scene = [
+        'add' => [],
+        'enable' => []
+    ];
+
+    protected function sceneList()
+    {
+        $this->rule = [];
+    }
+
+    protected function sceneAdd()
+    {
+    }
+
+    protected function sceneUpdate()
+    {
+        $this->rule = [
+            'name' => 'require',
+        ];
+    }
 }

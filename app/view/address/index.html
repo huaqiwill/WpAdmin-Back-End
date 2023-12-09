@@ -1,10 +1,8 @@
 {extend name="base"}
-
 {block name="main"}
 <!-- Page Wrapper -->
 <div class="page-wrapper" id="address_index_1123">
     <div class="content container-fluid">
-
         <!-- Page Header -->
         <div class="page-header">
             <div class="row align-items-center">
@@ -53,7 +51,7 @@
                                         <td>{{address.province}}</td>
                                         <td>{{address.city}}</td>
                                         <td>{{address.district}}</td>
-                                        <td>{{address.address}}</td>
+                                        <td>{{address.detail}}</td>
                                         <td>{{address.name}}</td>
 
                                         <td class="text-right">
@@ -113,37 +111,52 @@
         },
         methods: {
             generatePageLink(page) {
-                return `/index.php/address/index?page=${page}&page_size=${this.query.page_size}`;
+                return `/address/index?page=${page}&page_size=${this.query.page_size}`;
             },
             addressList() {
-                this.query.page = getQueryVariable("page") || 1
-                this.query.page_size = getQueryVariable("page_size") || 10
-                ajax_post("/address/list", this.query, (data, msg) => {
+                this.query.page = getQuery("page") || 1
+                this.query.page_size = getQuery("page_size") || 10
+                ajax.post("/address/list", this.query, (data, msg) => {
                     this.address_list = data.address_list;
                     this.count = data.count;
                 })
             },
             addressAddPage() {
-                html_get("/address/add", (html) => {
+                ajax.getHtml("/address/add", (html) => {
                     layer.open({
+                        type: 1,
                         label: "新增地址",
-                        btn: ['确认'],
-                        closeBtn: 2,
-                        area: ['600px', '500px'],
-                        content: html
+                        btn: ["确认"],
+                        area: ['500px', '500px'],
+                        content: html,
+                        yes: (index) => {
+                            let ok = localStorage.getItem("address_add_ok")
+                            if (ok) {
+                                this.addressList()
+                                layer.close(index);
+                                localStorage.setItem("address_add_ok", false)
+                            }
+                        }
                     })
                 })
             },
             addressUpdatePage(address_id) {
-                html_get("/address/update", (html) => {
+                ajax.getHtml("/address/update?id=" + address_id, (html) => {
                     layer.open({
-                        content: html
+                        type: 1,
+                        title: "更新地址",
+                        btn: ["更新"],
+                        area: ["600px", "500px"],
+                        content: html,
+                        yes: (index) => {
+                        }
                     })
-                })
+                });
+
             },
             addressDelete(address_id) {
                 layer.confirm("确定删除该地址吗？", { btn: ["确定", "取消"] }, () => {
-                    ajax_post("/address/delete", { address_id }, (data, msg) => {
+                    ajax.post("/address/delete", { address_id }, (data, msg) => {
                         layer.msg(msg);
                         this.addressList();
                     })

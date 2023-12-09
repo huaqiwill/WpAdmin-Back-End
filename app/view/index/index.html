@@ -132,7 +132,7 @@
                 return "width: " + percentage + "%"
             },
             statisticList() {
-                ajax_post("/index/statisticList", {}, (data, msg) => {
+                 ajax.post("/index/statisticList", {}, (data, msg) => {
                     this.statistics = data
                 });
             }

@@ -106,7 +106,7 @@
         },
         methods: {
             userAchievementList() {
-                ajax_post("/report/userAchievement", {}, (data, msg) => {
+                 ajax.post("/report/userAchievement", {}, (data, msg) => {
                     this.user_achievement_list = data
                 })
             }

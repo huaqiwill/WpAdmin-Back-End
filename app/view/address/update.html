@@ -1,0 +1,97 @@
+<script src="/js/jquery.js"></script>
+<script src="/distpicker/distpicker.js"></script>
+
+<div class="" id="map_add_1123">
+    <div class="">
+        <form class="layui-form">
+            <input id="address_id" type="text" :value="address.id" hidden>
+            <div class="layui-form-item">
+                <label class="layui-form-label">地址</label>
+                <div class="layui-input-block">
+                    <div class="layui-col-space5" id="distpicker" data-toggle="distpicker" data-autoselect="3">
+                        <div class="layui-col-md3">
+                            <select data-province="浙江省" id="province"></select>
+                        </div>
+                        <div class="layui-col-md3">
+                            <select data-city="杭州市" id="city"></select>
+                        </div>
+                        <div class="layui-col-md3">
+                            <select data-district="西湖区" id="district"></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="text-wrap: nowrap;">详细地址</label>
+                <div class="layui-input-block">
+                    <input type="text" v-model="address.detail" required lay-verify="required" placeholder="请输入详细地址"
+                        autocomplete="1" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">姓名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="name" v-model="address.name" required lay-verify="required"
+                        placeholder="请输入姓名" autocomplete="1" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">电话</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" v-model="address.phone" required lay-verify="required"
+                        placeholder="请输入电话" autocomplete="1" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">邮编</label>
+                <div class="layui-input-block">
+                    <input type="text" v-model="address.postcode" required lay-verify="required" placeholder="请输入邮编，可留空"
+                        autocomplete="1" class="layui-input">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    new Vue({
+        el: "#map_add_1123",
+        data: {
+            address: {
+                name: "1212",
+                phone: "1212",
+                province: "121",
+                city: "1212",
+                district: "湖北省",
+                detail: "1212",
+                address: "1212"
+            }
+        },
+        created() {
+            let address_id = getQuery("id");
+            this.getAddress(address_id);
+            $("a.layui-layer-btn0").click(() => {
+                alert("add");
+            });
+        },
+        methods: {
+            addressAdd() {
+                ajax.post("/address/add", this.address, (data, msg) => {
+                    localStorage.setItem("address_add_ok", true)
+                    layer.msg(msg);
+                });
+            },
+            getAddress(address_id) {
+                ajax.post("/address/info", { address_id }, (data, msg) => {
+                    console.log(data);
+
+                    $("#distpicker").distpicker({
+                        province: data.province,
+                        city: data.city,
+                        district: data.district
+                    });
+                    this.address = data
+                });
+            }
+        }
+    })
+</script>

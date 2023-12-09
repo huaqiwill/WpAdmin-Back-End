@@ -1,0 +1,51 @@
+<div class="container-fluid" id="permission_add_112">
+    <div class="row">
+        <div class="col-12">
+            <form class="mt-1">
+                <div class="form-item">
+                    <label class="form-label">权限名称</label>
+                    <select v-model="name" id="name" class="form-control">
+                        <option value="">请选择权限名称</option>
+                        <option v-for="name in name_list" :value="name">{{name}}</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    new Vue({
+        el: "#permission_add_112",
+        data: {
+            name: "",
+            name_list: [],
+        },
+        created() {
+            let role_id = getQuery("role_id");
+            this.permissionNameList(role_id);
+            $(".layui-layer-btn0").click(() => {
+                this.permissionAdd(role_id);
+            })
+        },
+        methods: {
+            permissionNameList(role_id) {
+                ajax.post("/permission/namelist", { role_id }, (data, msg) => {
+                    this.name_list = data;
+                })
+            },
+            permissionAdd(role_id) {
+                let name = this.name;
+                ajax.post("/permission/add", { role_id, name }, (data, msg) => {
+                    layui.layer.msg(msg, { icon: 1 })
+                    if (localStorage.index) {
+                        setTimeout(() => {
+                            layer.close(localStorage.index);
+                            localStorage.clear();
+                        }, 500)
+                    }
+                })
+            },
+        }
+    })
+</script>

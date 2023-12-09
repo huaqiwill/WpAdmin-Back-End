@@ -100,14 +100,14 @@
             }
         },
         created() {
-            this.page = getQueryVariable("page") || 1
-            this.page_size = getQueryVariable("page_size") || 10
+            this.page = getQuery("page") || 1
+            this.page_size = getQuery("page_size") || 10
         },
         methods: {
             productAdd() {
-                ajax_post("/product/add", this.product, (data, msg) => {
+                 ajax.post("/product/add", this.product, (data, msg) => {
                     layer.msg(msg);
-                    location.href = "/index.php/product/index?page=" + this.page + "&page_size=" + this.page_size
+                    location.href = "/product/index?page=" + this.page + "&page_size=" + this.page_size
                 });
             }
         }

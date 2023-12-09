@@ -37,25 +37,26 @@
                                 <thead class="thead-light">
                                     <tr>
                                         <th>姓名</th>
-                                        <th>真实姓名</th>
+                                        <th>员工类型</th>
                                         <th>手机号</th>
                                         <th>微信号</th>
                                         <th>身份证号</th>
                                         <th>联系人</th>
                                         <th>联系人手机号</th>
+                                        <th>所属单位</th>
                                         <th class="text-center">操作</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr v-for="user in users">
                                         <td>{{user.username}}</td>
-                                        <td>{{user.real_name}}</td>
+                                        <td>{{user.type}}</td>
                                         <td>{{user.phone}}</td>
                                         <td>{{user.email}}</td>
                                         <td>{{user.username}}</td>
                                         <td>{{user.username}}</td>
                                         <td>{{user.username}}</td>
-
+                                        <td>{{user.org_name}}</td>
                                         <td class="text-right">
                                             <a @click="userUpdatePage(user.id)"
                                                 class="btn btn-sm btn-white text-success mr-2">
@@ -118,19 +119,19 @@
                 return `/index.php/user/index?page=${page}&page_size=${this.query.page_size}`;
             },
             userList() {
-                this.query.page = getQueryVariable("page") || 1
-                this.query.page_size = getQueryVariable("page_size") || 10
-                ajax_post("/user/list", this.query, (data, msg) => {
+                this.query.page = getQuery("page") || 1
+                this.query.page_size = getQuery("page_size") || 10
+                 ajax.post("/user/list", this.query, (data, msg) => {
                     this.users = data.users;
                     this.count = data.count;
                 })
             },
             userUpdatePage(user_id) {
-                location.href = "/index.php/user/update?user_id=" + user_id
+                location.href = "/user/update?user_id=" + user_id
             },
             userFreeze(user_id) {
                 layer.confirm("冻结此账号吗？", { btn: ["确定", "取消"] }, () => {
-                    ajax_post("/user/freeze", { user_id }, (data, msg) => {
+                     ajax.post("/user/freeze", { user_id }, (data, msg) => {
                         layer.msg(msg);
                         this.userList();
                     })
@@ -138,7 +139,7 @@
             },
             userUnfreeze(user_id) {
                 layer.confirm("解冻此账号吗？", { btn: ["确定", "取消"] }, () => {
-                    ajax_post("/user/unfreeze", { user_id }, (data, msg) => {
+                     ajax.post("/user/unfreeze", { user_id }, (data, msg) => {
                         layer.msg(msg);
                         this.userList();
                     })

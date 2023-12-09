@@ -2,18 +2,18 @@
 
 namespace app\middleware;
 
+use app\model\PermissionModel;
 use app\model\UserModel;
 use app\Request;
-use Closure;
 use think\facade\Middleware;
 
 class TokenVerify extends Middleware
 {
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, \Closure $next)
     {
-        $currentRoute = $request->pathinfo();
-        // 如果当前路由需要排除，可以在这里添加逻辑
-        if ($currentRoute == 'user/login') {
+        $route = $request->pathinfo();
+
+        if ($route == 'user/login' || preg_match("/^static/", $route)) {
             return $next($request);
         }
 
@@ -29,14 +29,18 @@ class TokenVerify extends Middleware
             return redirect('/index.php/user/login');
         }
 
-        $userId = $user['id'];
-        $roleId = $user['role_id'];
-        $name = $user['username'];
+        $permissionModel = new PermissionModel();
+        $menus = $permissionModel->menus();
+
+        $user_id = $user['id'];
+        $user_name = $user['username'];
+        $role_id = $user['role_id'];
 
         $request->withMiddleware([
-            "role_id" => $roleId,
-            "name" => $name,
-            "user_id" => $userId
+            "role_id" => $role_id,
+            "name" => $user_name,
+            "user_id" => $user_id,
+            'menus' => $menus
         ]);
         return $next($request);
     }

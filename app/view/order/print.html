@@ -23,8 +23,8 @@
                 <div class="col-sm-12">
                     <h3 class="page-title">订单打印</h3>
                     <ul class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/index.php">主页</a></li>
-                        <li class="breadcrumb-item"><a href="/index.php/order/index">订单管理</a></li>
+                        <li class="breadcrumb-item"><a href="/index.html">主页</a></li>
+                        <li class="breadcrumb-item"><a href="/order/index">订单管理</a></li>
                         <li class="breadcrumb-item active">打印预览</li>
                     </ul>
                 </div>
@@ -82,8 +82,8 @@
                                 <tr v-for="order in orders">
                                     <td>{{order.name}}</td>
                                     <td>{{order.price}}</td>
-                                    <td>{{order.count}}</td>
-                                    <td>{{order.price * order.count}}</td>
+                                    <td>{{order.product_num}}</td>
+                                    <td>{{order.price * order.product_num}}</td>
                                 </tr>
                             </table>
                         </div>
@@ -129,7 +129,7 @@
             amount() {
                 let amount = 0;
                 for (let i = 0; i < this.orders.length; i++) {
-                    amount += this.orders[i].price * this.orders[i].count
+                    amount += this.orders[i].price * this.orders[i].product_num
                 }
                 return amount
             }
@@ -139,9 +139,10 @@
         },
         methods: {
             printInfo() {
-                let order_id = getQueryVariable("order_id")
-                let customer_id = getQueryVariable("customer_id")
-                ajax_post("/order/printInfo", { order_id, customer_id }, (data, msg) => {
+                let order_id = getQuery("order_id");
+                let customer_id = getQuery("customer_id");
+                let user_id = getQuery("user_id");
+                ajax.post("/order/printInfo", { user_id, order_id, customer_id }, (data, msg) => {
 
                     console.log(data.receiptInfo);
                     this.receiptInfo = data.receiptInfo

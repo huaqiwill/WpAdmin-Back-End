@@ -28,7 +28,8 @@
 								<div class="col-md-6">
 									<div class="form-group">
 										<label>姓名</label>
-										<input v-model="customer.cname" placeholder="请输入顾客姓名" type="text" class="form-control" required>
+										<input v-model="customer.cname" placeholder="请输入顾客姓名" type="text"
+											class="form-control" required>
 									</div>
 								</div>
 								<div class="col-md-6">
@@ -82,56 +83,34 @@
 								<div class="col-md-6">
 									<div class="form-group">
 										<label>手机</label>
-										<input placeholder="请输入顾客手机号" v-model="customer.phone" type="text" class="form-control" required>
+										<input placeholder="请输入顾客手机号" v-model="customer.phone" type="text"
+											class="form-control" required>
 									</div>
 								</div>
 								<div class="col-md-6">
 									<div class="form-group">
 										<label>微信号</label>
-										<input placeholder="请输入顾客微信号" v-model="customer.wechat" type="text" class="form-control" required>
+										<input placeholder="请输入顾客微信号" v-model="customer.wechat" type="text"
+											class="form-control" required>
 									</div>
 								</div>
 							</div>
 							<div class="row">
-								<div class="col-md-6">
-									<div class="form-group">
-										<label>省份</label>
-										<input v-model="customer.province" type="text" class="form-control" required>
-									</div>
-								</div>
-								<div class="col-md-6">
-									<div class="form-group">
-										<label>城市</label>
-										<input v-model="customer.city" type="text" class="form-control" required>
-									</div>
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-md-6">
-									<div class="form-group">
-										<label>区县</label>
-										<input v-model="customer.prefecture" type="text" class="form-control" required>
-									</div>
-								</div>
 								<div class="col-md-6">
 									<div class="form-group">
 										<label>邮箱</label>
-										<input placeholder="请输入顾客邮箱" v-model="customer.email" type="text" class="form-control" required>
+										<input placeholder="请输入顾客邮箱" v-model="customer.email" type="text"
+											class="form-control" required>
 									</div>
 								</div>
 							</div>
 							<div class="row">
-								<div class="col-md-6">
-									<div class="form-group">
-										<label>地址</label>
-										<input v-model="customer.address" type="text" class="form-control" required>
-									</div>
+								<div class="col-10">
+									<label class="form-label">默认地址</label>
+									湖北省武汉市
 								</div>
-								<div class="col-md-6">
-									<div class="form-group">
-										<label>时间</label>
-										<input v-model="customer.create_at" type="date" class="form-control" required>
-									</div>
+								<div class="col-2">
+
 								</div>
 							</div>
 							<div class="text-right mt-4">
@@ -171,7 +150,7 @@
 		methods: {
 			customerAdd() {
 				let that = this;
-				ajax_post("/customer/add", that.customer, (data, msg) => {
+				 ajax.post("/customer/add", that.customer, (data, msg) => {
 					layer.msg(msg);
 					window.location = "/index.php/customer/index";
 				})

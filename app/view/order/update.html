@@ -255,8 +255,8 @@
             phone_list: []
         },
         created() {
-            let order_id = getQueryVariable("order_id");
-            let user_id = getQueryVariable("user_id");
+            let order_id = getQuery("order_id");
+            let user_id = getQuery("user_id");
             this.orderInfo(order_id, user_id)
             this.productNameList()
             this.customerNameList()
@@ -273,7 +273,7 @@
         },
         methods: {
             orderInfo(order_id, user_id) {
-                ajax_post("/order/info", { order_id, user_id }, (data, msg) => {
+                 ajax.post("/order/info", { order_id, user_id }, (data, msg) => {
                     this.order = data
                     this.customerGetByPhone()
                     this.cartList(order_id, user_id)
@@ -284,7 +284,7 @@
                 if (name === "") {
                     return
                 }
-                ajax_post("/customer/phoneList", { name }, (data, msg) => {
+                 ajax.post("/customer/phoneList", { name }, (data, msg) => {
                     this.phone_list = data
                 })
             },
@@ -293,57 +293,57 @@
             },
             customerGetByPhone() {
                 let phone = this.order.customer_phone;
-                ajax_post("/customer/getByPhone", { phone }, (data, msg) => {
+                 ajax.post("/customer/getByPhone", { phone }, (data, msg) => {
                     this.customer = data
                 })
             },
             deliveryNameList() {
-                ajax_post("/delivery/nameList", {}, (data, msg) => {
+                 ajax.post("/delivery/nameList", {}, (data, msg) => {
                     this.delivery_name_list = data
                 })
             },
             productNameList() {
-                ajax_post("/product/nameList", {}, (data, msg) => {
+                 ajax.post("/product/nameList", {}, (data, msg) => {
                     this.product_name_list = data
                 })
             },
             customerNameList() {
-                ajax_post("/customer/nameList", {}, (data, msg) => {
+                 ajax.post("/customer/nameList", {}, (data, msg) => {
                     this.customer_name_list = data
                 })
             },
             orderList() {
-                ajax_post("/order/list", {}, (data, msg) => {
+                 ajax.post("/order/list", {}, (data, msg) => {
                     this.orders = data
                 })
             },
             orderAdd() {
                 this.order.amount = this.amount;
-                ajax_post("/order/add", this.order, (data, msg) => {
+                 ajax.post("/order/add", this.order, (data, msg) => {
                     layer.msg(msg)
-                    location.href = "/index.php/order/index"
+                    location.href = "/order/index"
                 })
             },
             cartList(order_id, user_id) {
-                ajax_post('/cart/list', { order_id, user_id }, (data, msg) => {
+                 ajax.post('/cart/list', { order_id, user_id }, (data, msg) => {
                     this.carts = data
                 })
             },
             cartAdd() {
                 let product_name = this.product_name;
-                ajax_post('/cart/add', { product_name }, (data, msg) => {
+                 ajax.post('/cart/add', { product_name }, (data, msg) => {
                     layer.msg(msg)
                     this.cartList()
                 })
             },
             cartUpdate(cart_id, product_num) {
-                ajax_post("/cart/update", { cart_id, product_num }, (data, msg) => {
+                 ajax.post("/cart/update", { cart_id, product_num }, (data, msg) => {
                     layer.msg(msg)
                     this.cartList()
                 })
             },
             cartDelete(cart_id) {
-                ajax_post("/cart/delete", { cart_id }, (data, msg) => {
+                 ajax.post("/cart/delete", { cart_id }, (data, msg) => {
                     layer.msg(msg)
                     this.cartList()
                 })
